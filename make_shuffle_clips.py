@@ -182,10 +182,11 @@ def main() -> None:
             )
             usable_total = TARGET_SEC
             logger.info(f"Trimmed last clip to {new_len:.2f}s to hit exactly 600 s")
-            clip_list.write_text(f"file '{out_clip}'\n", encoding="utf‑8", append=True)
+            with clip_list.open("a", encoding="utf-8") as fh:
+                fh.write(f"file '{out_clip}'\n")
             break
-
-        clip_list.write_text(f"file '{out_clip}'\n", encoding="utf‑8", append=True)
+        with clip_list.open("a", encoding="utf-8") as fh:
+            fh.write(f"file '{out_clip}'\n")
 
     logger.info(f"Usable media total: {usable_total:.2f}s")
     logger.info("Clip list ready")

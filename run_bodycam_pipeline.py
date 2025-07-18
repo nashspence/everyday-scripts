@@ -44,11 +44,11 @@ def main() -> None:
     logfile.touch()
 
     # Build dir & ISO path
-    build_dir = tempfile.mkdtemp(
+    build_dir_str = tempfile.mkdtemp(
         prefix=f"bodycam_{log_ts}_",
         dir=str(IMG_DIR),
     )
-    build_dir = Path(build_dir)
+    build_dir = Path(build_dir_str)
     iso_ts = utc_ts("%Y%m%dT%H%M%SZ")
     iso_path = IMG_DIR / f"{iso_ts}.iso"
 
