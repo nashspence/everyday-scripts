@@ -119,17 +119,17 @@ All numeric arguments must be positive integers.
 
 ```bash
 # Standard 25 GB disc, keep originals
-./prepare_bodycam.py --logfile prep.log --build-dir work shift1/*.mp4
+./scripts/prepare_bodycam/prepare_bodycam.py --logfile prep.log --build-dir work shift1/*.mp4
 
 # Double‑layer BD‑R, smaller safety margin
-./prepare_bodycam.py --logfile prep.log --build-dir work \
+./scripts/prepare_bodycam/prepare_bodycam.py --logfile prep.log --build-dir work \
   --disc-bytes 50_000_000_000 --safety-bytes 200_000_000 *.mp4
 
 # Resume a previously interrupted job
-./prepare_bodycam.py --logfile prep.log --resume work/progress.json
+./scripts/prepare_bodycam/prepare_bodycam.py --logfile prep.log --resume work/progress.json
 
 # After a clean run, delete source files
-./prepare_bodycam.py --logfile prep.log --build-dir work \
+./scripts/prepare_bodycam/prepare_bodycam.py --logfile prep.log --build-dir work \
   --delete-originals yes shift2/*.mp4
 ```
 

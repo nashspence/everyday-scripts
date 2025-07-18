@@ -7,7 +7,7 @@ End‑to‑end **automation**: drop your raw `.mp4` clips on the command‑line 
 1. **Pre‑processes** footage so everything fits a single 25 GB BD‑R (delegates to `prepare_bodycam.py`).
 2. **Masters** a UDF/ISO‑9660 image (`create_iso.py`).
 3. **Burns & verifies** the disc (`burn_iso.py`).
-4. **Cleans up** all temp artefacts (`cleanup.py`).
+4. **Cleans up** all temp artefacts (via the `cleanup` helper).
 
 A single, timestamped log captures every sub‑step.
 
@@ -29,7 +29,7 @@ A single, timestamped log captures every sub‑step.
 
 ```bash
 # minimal
-./run_bodycam_pipeline.py *.mp4
+./scripts/run_bodycam_pipeline/run_bodycam_pipeline.py *.mp4
 ```
 
 \### 3.1  Pass‑through flags — expose every useful option from the stages
@@ -41,7 +41,7 @@ For any flag that exists in a stage script you may supply the **same flag name**
 | `prepare_bodycam.py` | `--prep-`  | `--prep-disc-bytes 50_000_000_000`, `--prep-delete-originals yes` |
 | `create_iso.py`      | `--iso-`   | `--iso-volume-label SHIFT_001`, `--iso-force`                     |
 | `burn_iso.py`        | `--burn-`  | `--burn-skip-verify`, `--burn-speed 4`, `--burn-device /dev/sr0`  |
-| `cleanup.py`         | `--clean-` | `--clean-build-dir /tmp/work`                                     |
+| `cleanup`         | `--clean-` | `--clean-build-dir /tmp/work`                                     |
 
 * Flags keep **identical semantics, defaults, and mutually-exclusive rules** as documented in each script.
 * Unknown or misspelled flags abort before stage ① so nothing is written to disk.
@@ -49,7 +49,7 @@ For any flag that exists in a stage script you may supply the **same flag name**
 
 ```bash
 # full custom run (50 GB disc, custom label, no verify, 4× burn)
-./run_bodycam_pipeline.py shift1/*.mp4 \
+./scripts/run_bodycam_pipeline/run_bodycam_pipeline.py shift1/*.mp4 \
    --prep-disc-bytes 50_000_000_000 --prep-safety-bytes 0 \
    --iso-volume-label SHIFT1_20250718 --iso-force \
    --burn-skip-verify --burn-speed 4
@@ -64,7 +64,7 @@ For any flag that exists in a stage script you may supply the **same flag name**
 |  ① Prepare | `prepare_bodycam.py` | Copy or re‑encode clips into a temp *build dir* sized to fit disc. | ready‑to‑master files |
 |  ② Image   | `create_iso.py`      | Make `YYYYMMDDTHHMMSSZ.iso` (UTC stamp in volume name).            | ISO file              |
 |  ③ Burn    | `burn_iso.py`        | Write + SHA‑256 verify.                                            | Final Blu‑ray         |
-|  ④ Clean   | `cleanup.py`         | Delete build dir.                                                  | —                     |
+|  ④ Clean   | `cleanup`         | Delete build dir.                                                  | —                     |
 
 See each tool’s doc for exact flags and edge‑cases — the pipeline merely orchestrates them.
 

@@ -16,7 +16,7 @@ Single argument: path to the logfile.
 ## 3 Example invocation
 
 ```bash
-./open_console.zsh ~/logs/pipeline.log
+./scripts/open_console/open_console.zsh ~/logs/pipeline.log
 ```
 
 ---

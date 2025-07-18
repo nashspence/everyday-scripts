@@ -2,7 +2,7 @@
 
 ## 1 Purpose
 
-Wraps **three helpers**—`make_shuffle_clips.py → concat_shuffle.py → cleanup.py`—so you can cut, merge, and tidy a random highlight reel in a single command. Default output is a **10‑minute (600 s) montage** on your Desktop plus a full log, but every parameter of the underlying tools is exposed for power‑users.
+Wraps **three helpers**—`make_shuffle_clips.py → concat_shuffle.py → cleanup`—so you can cut, merge, and tidy a random highlight reel in a single command. Default output is a **10‑minute (600 s) montage** on your Desktop plus a full log, but every parameter of the underlying tools is exposed for power‑users.
 
 ---
 
@@ -46,7 +46,7 @@ Every flag of **all three helpers** can be supplied here; the wrapper validates,
 1. **Prepare** — create timestamped log, resolve defaults, make `--tmp-dir`.
 2. **Extract** — run `make_shuffle_clips.py` with all relevant args.
 3. **Concatenate** — call `concat_shuffle.py` (auto‑generates `--clip-list` unless you supplied one).
-4. **Clean** — invoke `cleanup.py` to delete `--build-dir`.
+4. **Clean** — call the `cleanup` helper to delete `--build-dir`.
 5. **Finish** — print absolute paths of final video & log; exit 0 only if every step succeeded. ([GitHub][1], [GitHub][3], [GitHub][4])
 
 ---
@@ -55,13 +55,13 @@ Every flag of **all three helpers** can be supplied here; the wrapper validates,
 
 ```bash
 # Default 10‑min montage
-./run_shuffle_pipeline.py vacation/*.mp4
+./scripts/run_shuffle_pipeline/run_shuffle_pipeline.py vacation/*.mp4
 
 # Two‑minute teaser, 1–3 s clips, reproducible shuffle
-./run_shuffle_pipeline.py --target-sec 120 --min-clip 1 --max-clip 3 --seed 42 *.mp4
+./scripts/run_shuffle_pipeline/run_shuffle_pipeline.py --target-sec 120 --min-clip 1 --max-clip 3 --seed 42 *.mp4
 
 # Power‑user: supply your own temp dir & output name
-./run_shuffle_pipeline.py --tmp-dir /var/tmp/shuf \
+./scripts/run_shuffle_pipeline/run_shuffle_pipeline.py --tmp-dir /var/tmp/shuf \
                           --out-file wow.mkv      \
                           cam?.mov
 ```

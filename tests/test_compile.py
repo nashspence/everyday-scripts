@@ -3,7 +3,9 @@ from pathlib import Path
 
 import pytest
 
-scripts = [p for p in Path(__file__).resolve().parents[1].glob("*.py")]
+repo_root = Path(__file__).resolve().parents[1]
+scripts = [p for p in repo_root.joinpath("scripts").rglob("*.py")]
+scripts.append(repo_root / "utils.py")
 
 
 @pytest.mark.parametrize("script", scripts)

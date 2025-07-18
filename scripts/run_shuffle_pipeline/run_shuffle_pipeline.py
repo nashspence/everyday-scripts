@@ -38,6 +38,8 @@ def main() -> None:
     env = os.environ.copy()
     env["PATH"] = f"{PATH_ENV}:{env['PATH']}"
 
+    scripts_root = Path(__file__).resolve().parents[1]
+
     def run(cmd: list[str]) -> None:
         subprocess.run(cmd, env=env, check=True)
 
@@ -45,7 +47,7 @@ def main() -> None:
     run(
         [
             sys.executable,
-            "make_shuffle_clips.py",
+            str(scripts_root / "make_shuffle_clips" / "make_shuffle_clips.py"),
             "--logfile",
             str(log),
             "--tmp-dir",
@@ -58,7 +60,7 @@ def main() -> None:
     run(
         [
             sys.executable,
-            "concat_shuffle.py",
+            str(scripts_root / "concat_shuffle" / "concat_shuffle.py"),
             "--logfile",
             str(log),
             "--clip-list",

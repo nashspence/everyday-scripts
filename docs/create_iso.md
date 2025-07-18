@@ -49,13 +49,13 @@ If any required tool is missing, the script aborts early with a clear error.
 
 ```bash
 # 1. Timestamp‑labelled ISO (no custom label)
-./create_iso.py \
+./scripts/create_iso/create_iso.py \
   --build-dir build/ \
   --iso-path out/footage.iso \
   --logfile create.log
 
 # 2. Custom‑label ISO
-./create_iso.py \
+./scripts/create_iso/create_iso.py \
   --build-dir build/ \
   --iso-path out/backup.iso \
   --volume-label MASTER_001 \

@@ -13,5 +13,5 @@ fi
 
 black --check .
 ruff check .
-mypy --no-site-packages *.py
+mypy --no-site-packages scripts utils.py
 pytest -q

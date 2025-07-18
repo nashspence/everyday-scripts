@@ -28,7 +28,7 @@ Typical use‑case: you first run `make_shuffle_clips.py` to cut highlights, the
 ## 3  Quick start
 
 ```bash
-./concat_shuffle.py \
+./scripts/concat_shuffle/concat_shuffle.py \
   --clip-list clip_list.txt \
   --out-file  montage.mkv \
   --logfile   concat.log

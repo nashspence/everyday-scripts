@@ -40,7 +40,7 @@ A UTF‑8 JSON file containing at minimum the keys FFmpeg prints:
 ## 5  Example
 
 ```bash
-./analyse_loudness.py \
+./scripts/analyse_loudness/analyse_loudness.py \
   --logfile loudness.log \
   --in-file clip.mov \
   --out-json metrics.json

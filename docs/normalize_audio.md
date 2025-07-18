@@ -46,10 +46,10 @@ Create a version of any A/V file that **meets EBU R128 (or your own) loudness 
 
 ```bash
 # Pass 1 – measure
-./analyse_loudness.py --in-file clip.mov --out-json clip_metrics.json
+./scripts/analyse_loudness/analyse_loudness.py --in-file clip.mov --out-json clip_metrics.json
 
 # Pass 2 – normalise
-./normalize_audio.py \
+./scripts/normalize_audio/normalize_audio.py \
   --logfile norm.log \
   --in-file clip.mov \
   --out-file clip_R128.mov \

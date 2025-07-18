@@ -54,13 +54,13 @@ The result feels shuffled, yet always progresses forward in time.
 ## 5 Quick start
 ```bash
 # Ten‑minute reel, default 2–5 s clips
-./make_shuffle_clips.py \
+./scripts/make_shuffle_clips/make_shuffle_clips.py \
     --logfile shuffle.log \
     --tmp-dir /tmp/shuf \
     cam1.mp4 cam2.mp4 cam3.mp4
 
 # Two‑minute super‑quick preview, 1–3 s clips
-./make_shuffle_clips.py \
+./scripts/make_shuffle_clips/make_shuffle_clips.py \
     --target-sec 120 \
     --min-clip 1 \
     --max-clip 3 \
