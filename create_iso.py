@@ -3,6 +3,7 @@
 Usage:
     create_iso.py --logfile LOG --build-dir DIR --iso-path /path/to.iso --iso-ts 20250713T220342Z
 """
+from __future__ import annotations
 import argparse
 import subprocess
 import sys

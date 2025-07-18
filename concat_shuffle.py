@@ -5,6 +5,7 @@ Concatenate stream‑copied clips into the final montage.
 Usage:
   concat_shuffle.py --logfile LOG --clip-list PATH --out-file OUTPUT
 """
+from __future__ import annotations
 import argparse
 import subprocess
 from logging_utils import setup_logging, prepend_path

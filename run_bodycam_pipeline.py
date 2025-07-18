@@ -55,7 +55,7 @@ def main() -> None:
     env = os.environ.copy()
     env["PATH"] = "/opt/homebrew/bin:/usr/local/bin:" + env["PATH"]
 
-    def run(script: str, *extra):
+    def run(script: str, *extra: str) -> None:
         subprocess.run(
             [sys.executable, script, "--logfile", str(logfile), *extra],
             env=env,

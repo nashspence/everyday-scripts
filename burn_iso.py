@@ -3,6 +3,7 @@
 Usage:
     burn_iso.py --logfile LOG --iso-path /path/to.iso
 """
+from __future__ import annotations
 import argparse
 import subprocess
 from pathlib import Path

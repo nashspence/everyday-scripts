@@ -19,11 +19,11 @@ LOG_DIR = ROOT / "logs"
 DEFAULT_I, DEFAULT_TP = -16.0, -1.5
 
 
-def utc_stamp(fmt="%Y%m%dT%H%M%SZ"):
+def utc_stamp(fmt: str = "%Y%m%dT%H%M%SZ") -> str:
     return datetime.utcnow().strftime(fmt)
 
 
-def local_stamp(fmt="%Y%m%dT%H%M%S"):
+def local_stamp(fmt: str = "%Y%m%dT%H%M%S") -> str:
     return datetime.now().strftime(fmt)
 
 
@@ -68,7 +68,7 @@ def main() -> None:
     env = os.environ.copy()
     env["PATH"] = "/opt/homebrew/bin:/usr/local/bin:" + env["PATH"]
 
-    def run(cmd: list[str]):
+    def run(cmd: list[str]) -> None:
         subprocess.run(cmd, env=env, check=True)
 
     # -- PASS 1 -------------------------------------------------------------

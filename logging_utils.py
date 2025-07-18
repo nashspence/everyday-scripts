@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import atexit
 import logging
 import os
@@ -35,6 +37,6 @@ def setup_logging(logfile: str, name: str | None = None) -> logging.Logger:
     return logger
 
 
-def prepend_path():
-    # Match the PATH changes in your original script
+def prepend_path() -> None:
+    """Modify ``PATH`` for the subprocesses invoked by the scripts."""
     os.environ["PATH"] = "/opt/homebrew/bin:/usr/local/bin:" + os.environ["PATH"]
