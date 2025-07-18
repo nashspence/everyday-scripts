@@ -1,4 +1,3 @@
-````markdown
 # make_shuffle_clips.py — build a 10‑min highlight reel from any set of videos
 
 Generate a **chronological‑but‑shuffled** montage: every clip is taken from an equal‑sized “virtual partition” of the combined timeline, so the finished reel samples *the whole day* while still feeling random inside each slice.
