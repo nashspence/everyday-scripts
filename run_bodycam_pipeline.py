@@ -6,7 +6,7 @@ Creates a per‑run timestamp, log file, working dir, ISO name, and then runs:
     1. prepare_bodycam.py
     2. create_iso.py
     3. burn_iso.py
-    4. cleanup.py
+    4. utils.cleanup
 All stderr/stdout from sub‑scripts is appended to the same log.
 """
 from __future__ import annotations
@@ -18,6 +18,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from utils import cleanup, setup_logging
 
 ROOT = Path("/Volumes/Sabrent Rocket XTRM-Q 2TB")
 LOG_DIR = ROOT / "logs"
@@ -73,7 +74,9 @@ def main() -> None:
         iso_ts,
     )
     run("burn_iso.py", "--iso-path", str(iso_path))
-    run("cleanup.py", "--build-dir", str(build_dir))
+
+    logger = setup_logging(str(logfile), "cleanup")
+    cleanup(build_dir, logger)
 
     # Summarise for the user
     print("\n🎉  Done – ISO stored at:")

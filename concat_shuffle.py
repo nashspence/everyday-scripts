@@ -8,7 +8,7 @@ Usage:
 from __future__ import annotations
 import argparse
 import subprocess
-from logging_utils import setup_logging, prepend_path
+from utils import setup_logging, prepend_path
 
 
 def main() -> None:

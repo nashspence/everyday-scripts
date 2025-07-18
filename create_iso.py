@@ -8,7 +8,7 @@ import argparse
 import subprocess
 import sys
 from pathlib import Path
-from logging_utils import setup_logging, prepend_path
+from utils import setup_logging, prepend_path
 
 
 def main() -> None:
