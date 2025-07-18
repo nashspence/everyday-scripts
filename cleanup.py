@@ -3,9 +3,11 @@
 Usage:
     cleanup.py --logfile LOG --build-dir DIR
 """
-import argparse, shutil
+import argparse
+import shutil
 from pathlib import Path
 from logging_utils import setup_logging
+
 
 def main() -> None:
     ap = argparse.ArgumentParser()
@@ -20,6 +22,7 @@ def main() -> None:
         logger.info(f"Removed {tgt}")
     else:
         logger.warning(f"Nothing to delete: {tgt}")
+
 
 if __name__ == "__main__":
     main()

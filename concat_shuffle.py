@@ -5,9 +5,10 @@ Concatenate stream‑copied clips into the final montage.
 Usage:
   concat_shuffle.py --logfile LOG --clip-list PATH --out-file OUTPUT
 """
-import argparse, subprocess
-from pathlib import Path
+import argparse
+import subprocess
 from logging_utils import setup_logging, prepend_path
+
 
 def main() -> None:
     ap = argparse.ArgumentParser()
@@ -20,13 +21,28 @@ def main() -> None:
     prepend_path()
 
     subprocess.run(
-        ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
-         "-f", "concat", "-safe", "0",
-         "-i", ns.clip_list,
-         "-c", "copy", "-movflags", "+faststart", ns.out_file],
+        [
+            "ffmpeg",
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-y",
+            "-f",
+            "concat",
+            "-safe",
+            "0",
+            "-i",
+            ns.clip_list,
+            "-c",
+            "copy",
+            "-movflags",
+            "+faststart",
+            ns.out_file,
+        ],
         check=True,
     )
     logger.info(f"Montage saved to {ns.out_file}")
+
 
 if __name__ == "__main__":
     main()

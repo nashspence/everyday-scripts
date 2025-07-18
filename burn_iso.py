@@ -3,9 +3,11 @@
 Usage:
     burn_iso.py --logfile LOG --iso-path /path/to.iso
 """
-import argparse, subprocess
+import argparse
+import subprocess
 from pathlib import Path
 from logging_utils import setup_logging, prepend_path
+
 
 def main() -> None:
     ap = argparse.ArgumentParser()
@@ -23,6 +25,7 @@ def main() -> None:
         check=True,
     )
     logger.info("✅ Burn + verify completed")
+
 
 if __name__ == "__main__":
     main()

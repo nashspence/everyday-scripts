@@ -11,18 +11,26 @@ All stderr/stdout from sub‑scripts is appended to the same log.
 """
 from __future__ import annotations
 
-import argparse, datetime, os, subprocess, sys, tempfile
+import argparse
+import datetime
+import os
+import subprocess
+import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path("/Volumes/Sabrent Rocket XTRM-Q 2TB")
 LOG_DIR = ROOT / "logs"
 IMG_DIR = ROOT / "images"
 
+
 def utc_ts(fmt: str) -> str:
     return datetime.datetime.utcnow().strftime(fmt)
 
+
 def local_ts(fmt: str) -> str:
     return datetime.datetime.now().strftime(fmt)
+
 
 def main() -> None:
     ap = argparse.ArgumentParser()
@@ -55,8 +63,15 @@ def main() -> None:
         )
 
     run("prepare_bodycam.py", "--build-dir", str(build_dir), *map(str, files))
-    run("create_iso.py", "--build-dir", str(build_dir),
-        "--iso-path", str(iso_path), "--iso-ts", iso_ts)
+    run(
+        "create_iso.py",
+        "--build-dir",
+        str(build_dir),
+        "--iso-path",
+        str(iso_path),
+        "--iso-ts",
+        iso_ts,
+    )
     run("burn_iso.py", "--iso-path", str(iso_path))
     run("cleanup.py", "--build-dir", str(build_dir))
 
@@ -64,6 +79,7 @@ def main() -> None:
     print("\n🎉  Done – ISO stored at:")
     print(iso_path)
     print(f"\nFull log → {logfile}")
+
 
 if __name__ == "__main__":
     main()

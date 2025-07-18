@@ -3,9 +3,12 @@
 Usage:
     create_iso.py --logfile LOG --build-dir DIR --iso-path /path/to.iso --iso-ts 20250713T220342Z
 """
-import argparse, os, subprocess, sys
+import argparse
+import subprocess
+import sys
 from pathlib import Path
 from logging_utils import setup_logging, prepend_path
+
 
 def main() -> None:
     ap = argparse.ArgumentParser()
@@ -25,11 +28,17 @@ def main() -> None:
     logger.info(f"Creating ISO {iso_path.name} …")
     subprocess.run(
         [
-            "hdiutil", "makehybrid",
-            "-udf", "-iso",
-            "-udf-volume-name", ns.iso_ts,
-            "-default-volume-name", ns.iso_ts,
-            "-o", str(iso_path), ".",
+            "hdiutil",
+            "makehybrid",
+            "-udf",
+            "-iso",
+            "-udf-volume-name",
+            ns.iso_ts,
+            "-default-volume-name",
+            ns.iso_ts,
+            "-o",
+            str(iso_path),
+            ".",
         ],
         cwd=build_dir,
         check=True,
@@ -38,6 +47,7 @@ def main() -> None:
         logger.error("❌ ISO not created.")
         sys.exit(1)
     logger.info("ISO created successfully")
+
 
 if __name__ == "__main__":
     main()

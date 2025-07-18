@@ -8,21 +8,35 @@ Outputs:
 """
 from __future__ import annotations
 
-import argparse, json, math, os, shutil, subprocess, sys, tempfile
+import argparse
+import math
+import shutil
+import subprocess
+import sys
 from pathlib import Path
 from logging_utils import setup_logging, prepend_path
 
-DISC_BYTES = 25_000_000_000      # target BD‑R size
-SAFETY_BYTES = 500 * 1024 * 1024 # keep ~500 MiB free
+DISC_BYTES = 25_000_000_000  # target BD‑R size
+SAFETY_BYTES = 500 * 1024 * 1024  # keep ~500 MiB free
 ALLOW_BYTES = DISC_BYTES - SAFETY_BYTES
+
 
 def get_duration(path: Path) -> float:
     out = subprocess.check_output(
-        ["ffprobe", "-v", "error", "-show_entries", "format=duration",
-         "-of", "default=nw=1:nk=1", str(path)],
+        [
+            "ffprobe",
+            "-v",
+            "error",
+            "-show_entries",
+            "format=duration",
+            "-of",
+            "default=nw=1:nk=1",
+            str(path),
+        ],
         text=True,
     )
     return float(out.strip())
+
 
 def main() -> None:
     ap = argparse.ArgumentParser()
@@ -62,19 +76,53 @@ def main() -> None:
             logger.info(f"[{idx}/{len(files)}] → {out.name}")
             subprocess.run(
                 [
-                    "ffmpeg", "-hide_banner", "-loglevel", "warning", "-stats",
-                    "-y", "-i", str(src),
-                    "-map", "0:v:0", "-map", "0:a:0",
-                    "-c:v", "libsvtav1", "-b:v", f"{global_kbps}k",
-                    "-svtav1-params", "rc=1", "-preset", "5",
-                    "-c:a", "libopus", "-b:a", "28k", "-vbr", "on",
-                    "-compression_level", "10", "-application", "audio",
-                    "-frame_duration", "40", "-ar", "24000", "-ac", "1",
-                    "-cutoff", "12000", "-c:s", "copy", "-c:d", "copy",
+                    "ffmpeg",
+                    "-hide_banner",
+                    "-loglevel",
+                    "warning",
+                    "-stats",
+                    "-y",
+                    "-i",
+                    str(src),
+                    "-map",
+                    "0:v:0",
+                    "-map",
+                    "0:a:0",
+                    "-c:v",
+                    "libsvtav1",
+                    "-b:v",
+                    f"{global_kbps}k",
+                    "-svtav1-params",
+                    "rc=1",
+                    "-preset",
+                    "5",
+                    "-c:a",
+                    "libopus",
+                    "-b:a",
+                    "28k",
+                    "-vbr",
+                    "on",
+                    "-compression_level",
+                    "10",
+                    "-application",
+                    "audio",
+                    "-frame_duration",
+                    "40",
+                    "-ar",
+                    "24000",
+                    "-ac",
+                    "1",
+                    "-cutoff",
+                    "12000",
+                    "-c:s",
+                    "copy",
+                    "-c:d",
+                    "copy",
                     str(out),
                 ],
                 check=True,
             )
+
 
 if __name__ == "__main__":
     main()
