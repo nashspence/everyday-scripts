@@ -56,16 +56,19 @@ def main() -> None:
     env = os.environ.copy()
     env["PATH"] = "/opt/homebrew/bin:/usr/local/bin:" + env["PATH"]
 
-    def run(script: str, *extra: str) -> None:
+    scripts_root = Path(__file__).resolve().parents[1]
+
+    def run(script_name: str, *extra: str) -> None:
+        script_path = scripts_root / script_name / f"{script_name}.py"
         subprocess.run(
-            [sys.executable, script, "--logfile", str(logfile), *extra],
+            [sys.executable, str(script_path), "--logfile", str(logfile), *extra],
             env=env,
             check=True,
         )
 
-    run("prepare_bodycam.py", "--build-dir", str(build_dir), *map(str, files))
+    run("prepare_bodycam", "--build-dir", str(build_dir), *map(str, files))
     run(
-        "create_iso.py",
+        "create_iso",
         "--build-dir",
         str(build_dir),
         "--iso-path",
@@ -73,7 +76,7 @@ def main() -> None:
         "--iso-ts",
         iso_ts,
     )
-    run("burn_iso.py", "--iso-path", str(iso_path))
+    run("burn_iso", "--iso-path", str(iso_path))
 
     logger = setup_logging(str(logfile), "cleanup")
     cleanup(build_dir, logger)

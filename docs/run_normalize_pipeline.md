@@ -44,10 +44,10 @@ You feed it any media file; it gives you back an AAC‑encoded copy whose audio 
 
 ```bash
 # Most people just need this:
-./run_normalize_pipeline.py input.wav
+./scripts/run_normalize_pipeline/run_normalize_pipeline.py input.wav
 
 # Custom loudness, explicit output path:
-./run_normalize_pipeline.py -i -14 -t -2 input.mp4 fixed_audio.mp4
+./scripts/run_normalize_pipeline/run_normalize_pipeline.py -i -14 -t -2 input.mp4 fixed_audio.mp4
 ```
 
 ---

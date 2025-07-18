@@ -68,6 +68,8 @@ def main() -> None:
     env = os.environ.copy()
     env["PATH"] = "/opt/homebrew/bin:/usr/local/bin:" + env["PATH"]
 
+    scripts_root = Path(__file__).resolve().parents[1]
+
     def run(cmd: list[str]) -> None:
         subprocess.run(cmd, env=env, check=True)
 
@@ -75,7 +77,7 @@ def main() -> None:
     run(
         [
             sys.executable,
-            "analyse_loudness.py",
+            str(scripts_root / "analyse_loudness" / "analyse_loudness.py"),
             "--logfile",
             str(log),
             "--in-file",
@@ -93,7 +95,7 @@ def main() -> None:
     run(
         [
             sys.executable,
-            "normalize_audio.py",
+            str(scripts_root / "normalize_audio" / "normalize_audio.py"),
             "--logfile",
             str(log),
             "--in-file",

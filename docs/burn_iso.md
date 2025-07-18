@@ -59,10 +59,10 @@ The script exits **0** only when every executed stage succeeds.
 
 ```bash
 # Minimal (burn + verify)
-./burn_iso.py --iso-path footage.iso
+./scripts/burn_iso/burn_iso.py --iso-path footage.iso
 
 # No verification, verbose log, 4× speed, explicit drive
-./burn_iso.py --iso-path footage.iso --skip-verify --logfile burn.log --speed 4 --device /dev/sr0
+./scripts/burn_iso/burn_iso.py --iso-path footage.iso --skip-verify --logfile burn.log --speed 4 --device /dev/sr0
 ```
 
 ---
