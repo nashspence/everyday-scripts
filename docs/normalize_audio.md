@@ -1,11 +1,11 @@
 # **normalize\_audio.py — Broadcast‑ready loudness correction**
 
-\## 1 Purpose
+## 1 Purpose
 Create a version of any A/V file that **meets EBU R128 (or your own) loudness and true‑peak targets** while staying sample‑accurate to the original video. It is **pass 2** of a two‑stage workflow: first run `analyse_loudness.py`, then feed its metrics to this script.
 
 ---
 
-\## 2 Prerequisites
+## 2 Prerequisites
 
 | Item                                                 | Why it matters                                        |
 | ---------------------------------------------------- | ----------------------------------------------------- |
@@ -20,7 +20,7 @@ Create a version of any A/V file that **meets EBU R128 (or your own) loudness 
 
 ---
 
-\## 3 CLI options
+## 3 CLI options
 
 | Flag                   | Required | Example             | Notes                                     |
 | ---------------------- | :------: | ------------------- | ----------------------------------------- |
@@ -33,7 +33,7 @@ Create a version of any A/V file that **meets EBU R128 (or your own) loudness 
 
 ---
 
-\## 4 Under the hood (60 s)
+## 4 Under the hood (60 s)
 
 1. **Validate JSON** – checks for keys `input_i / tp / lra / thresh / target_offset`; aborts if any are missing.
 2. **Build filter chain** – `highpass=f=120, loudnorm=…, aresample=async=1` ensures clean low‑end, correct loudness, and audio/video sync.
@@ -42,7 +42,7 @@ Create a version of any A/V file that **meets EBU R128 (or your own) loudness 
 
 ---
 
-\## 5 Quick‑start
+## 5 Quick‑start
 
 ```bash
 # Pass 1 – measure
@@ -58,7 +58,7 @@ Create a version of any A/V file that **meets EBU R128 (or your own) loudness 
 
 ---
 
-\## 6 Acceptance criteria (platform‑agnostic)
+## 6 Acceptance criteria (platform‑agnostic)
 
 | #      | Scenario & pre‑conditions          | Steps (user → expected result)                                                                         |
 | ------ | ---------------------------------- | ------------------------------------------------------------------------------------------------------ |
