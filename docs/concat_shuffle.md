@@ -21,7 +21,7 @@ Typical use‑case: you first run `make_shuffle_clips.py` to cut highlights, the
 | -------------------- | -------- | ------------------------------------------------------------------------ | ------------- |
 | `--clip-list <path>` | ✔        | Text file in FFmpeg “concat” format produced by `make_shuffle_clips.py`. |               |
 | `--out-file  <name>` | ✔        | Target video file (e.g., `montage.mkv`). Overwritten if already present. |               |
-| `--logfile   <path>` | ✖        | Where to write verbose progress output (defaults to STDOUT).             | ([GitHub][1]) |
+| `--logfile   <path>` | ✖        | Where to write verbose progress output (defaults to STDOUT).             |               |
 
 ---
 
