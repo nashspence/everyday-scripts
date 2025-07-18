@@ -1,0 +1,14 @@
+services:
+  devcontainer:
+    build:
+      context: .
+      dockerfile: Dockerfile.devcontainer
+    command: ["/bin/sh"]
+    container_name: everyday-scripts-devcontainer
+    hostname: everyday-scripts-devcontainer
+    privileged: true
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../:/workspace
+      - ../docker-data:/var/lib/docker

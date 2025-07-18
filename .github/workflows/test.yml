@@ -1,0 +1,21 @@
+name: test
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      REPO: ${{ github.event.repository.name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install docker-compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - run: docker-compose -f .devcontainer/docker-compose.yml up --build -d
+      - run: docker exec ${REPO}-devcontainer /usr/local/bin/postStart.sh
+      - run: docker exec ${REPO}-devcontainer ./check.sh
+      - run: docker-compose -f .devcontainer/docker-compose.yml down -v

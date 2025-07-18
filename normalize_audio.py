@@ -6,8 +6,11 @@ Usage:
     normalize_audio.py --logfile LOG --in-file IN --out-file OUT --target-i -16 --target-tp -1.5 --analysis-json METRICS.json
 """
 from __future__ import annotations
-import argparse, json, subprocess
+import argparse
+import json
+import subprocess
 from logging_utils import setup_logging, prepend_path
+
 
 def main() -> None:
     ap = argparse.ArgumentParser()
@@ -38,18 +41,30 @@ def main() -> None:
     )
 
     cmd = [
-        "ffmpeg", "-hide_banner", "-loglevel", "verbose", "-y",
-        "-i", ns.in_file,
-        "-filter_complex", filter_complex,
-        "-map", "0:v?",           # copy video if it exists
-        "-map", "[a]",
-        "-c:v", "copy",
-        "-c:a", "aac",
-        "-movflags", "+faststart",
+        "ffmpeg",
+        "-hide_banner",
+        "-loglevel",
+        "verbose",
+        "-y",
+        "-i",
+        ns.in_file,
+        "-filter_complex",
+        filter_complex,
+        "-map",
+        "0:v?",  # copy video if it exists
+        "-map",
+        "[a]",
+        "-c:v",
+        "copy",
+        "-c:a",
+        "aac",
+        "-movflags",
+        "+faststart",
         ns.out_file,
     ]
     subprocess.run(cmd, check=True)
     logger.info("✓ done – file normalised and saved")
+
 
 if __name__ == "__main__":
     main()

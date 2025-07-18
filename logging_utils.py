@@ -1,5 +1,9 @@
-import atexit, logging, os, sys, time
-from datetime import datetime, timezone
+import atexit
+import logging
+import os
+import sys
+import time
+
 
 def setup_logging(logfile: str, name: str | None = None) -> logging.Logger:
     """
@@ -7,7 +11,7 @@ def setup_logging(logfile: str, name: str | None = None) -> logging.Logger:
     Writes to `logfile` *and* to stderr (so the tailing Terminal shows live output).
     """
     logger = logging.getLogger(name)
-    if logger.hasHandlers():                             # avoid duplicate handlers
+    if logger.hasHandlers():  # avoid duplicate handlers
         logger.handlers.clear()
 
     logger.setLevel(logging.INFO)
