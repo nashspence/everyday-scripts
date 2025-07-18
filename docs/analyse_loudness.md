@@ -11,7 +11,7 @@ Runs FFmpeg’s first `loudnorm` pass to pull the loudness statistics (LUFS, tru
 ## 2  Prerequisites
 
 * **FFmpeg ≥ 4.3** in `PATH` (build with `loudnorm` filter).
-* **Python 3.8+** plus the helper module `logging_utils` shipped in the repo.
+* **Python 3.8+** plus the helper module `utils` shipped in the repo.
 * Read/write access to the directories you pass in.
 
 ---

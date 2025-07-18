@@ -5,6 +5,8 @@ import logging
 import os
 import sys
 import time
+from pathlib import Path
+import shutil
 
 
 def setup_logging(logfile: str, name: str | None = None) -> logging.Logger:
@@ -40,3 +42,13 @@ def setup_logging(logfile: str, name: str | None = None) -> logging.Logger:
 def prepend_path() -> None:
     """Modify ``PATH`` for the subprocesses invoked by the scripts."""
     os.environ["PATH"] = "/opt/homebrew/bin:/usr/local/bin:" + os.environ["PATH"]
+
+
+def cleanup(build_dir: str | Path, logger: logging.Logger) -> None:
+    """Delete temporary working directory if it exists."""
+    tgt = Path(build_dir)
+    if tgt.exists():
+        shutil.rmtree(tgt)
+        logger.info(f"Removed {tgt}")
+    else:
+        logger.warning(f"Nothing to delete: {tgt}")

@@ -12,7 +12,7 @@ import re
 import subprocess
 from pathlib import Path
 from typing import Any, cast
-from logging_utils import setup_logging, prepend_path
+from utils import setup_logging, prepend_path
 
 
 def extract_json(stderr: str) -> dict[str, Any]:

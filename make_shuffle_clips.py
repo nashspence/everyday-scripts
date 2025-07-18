@@ -15,7 +15,7 @@ import math
 import random
 import subprocess
 from pathlib import Path
-from logging_utils import setup_logging, prepend_path
+from utils import setup_logging, prepend_path
 
 TARGET_SEC = 600  # total montage length
 MIN_CLIP = 2  # inclusive

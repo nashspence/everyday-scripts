@@ -12,6 +12,7 @@ import sys
 import tempfile
 from datetime import datetime
 from pathlib import Path
+from utils import cleanup, setup_logging
 
 ROOT_DESK = Path.home() / "Desktop"
 LOG_DIR = ROOT_DESK  # same place as original
@@ -68,16 +69,8 @@ def main() -> None:
     )
 
     # -- clean ---------------------------------------------------------------
-    run(
-        [
-            sys.executable,
-            "cleanup.py",
-            "--logfile",
-            str(log),
-            "--build-dir",
-            str(tmp_dir),
-        ]
-    )
+    logger = setup_logging(str(log), "cleanup")
+    cleanup(tmp_dir, logger)
 
     print(f"\n🎉  Shuffle montage ready:\n{out_file}")
     print(f"\nFull log → {log}")
