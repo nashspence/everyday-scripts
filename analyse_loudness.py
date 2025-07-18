@@ -11,15 +11,16 @@ import json
 import re
 import subprocess
 from pathlib import Path
+from typing import Any, cast
 from logging_utils import setup_logging, prepend_path
 
 
-def extract_json(stderr: str) -> dict:
+def extract_json(stderr: str) -> dict[str, Any]:
     """Pull the { … } block printed by FFmpeg and load it."""
     m = re.search(r"\{\s*\"input_i\".*\}", stderr, re.S)
     if not m:
         raise RuntimeError("Could not find loudnorm JSON in FFmpeg output")
-    return json.loads(m.group(0))
+    return cast(dict[str, Any], json.loads(m.group(0)))
 
 
 def main() -> None:

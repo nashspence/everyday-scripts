@@ -37,7 +37,7 @@ def main() -> None:
     env = os.environ.copy()
     env["PATH"] = f"{PATH_ENV}:{env['PATH']}"
 
-    def run(cmd: list[str]):
+    def run(cmd: list[str]) -> None:
         subprocess.run(cmd, env=env, check=True)
 
     # -- extract -------------------------------------------------------------

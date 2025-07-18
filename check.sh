@@ -13,6 +13,5 @@ fi
 
 black --check .
 ruff check .
-# mypy is optional for these scripts
-mypy --ignore-missing-imports --no-site-packages *.py tests || true
+mypy --no-site-packages *.py
 pytest -q

@@ -3,6 +3,7 @@
 Usage:
     cleanup.py --logfile LOG --build-dir DIR
 """
+from __future__ import annotations
 import argparse
 import shutil
 from pathlib import Path
