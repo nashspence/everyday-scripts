@@ -28,6 +28,6 @@ jobs:
             docker exec ${REPO}-devcontainer docker run --rm \
               -v /workspace:/workspace \
               ${REPO}:ci \
-              bash -lc "pytest -q /workspace/${t}"
+              -m pytest -q /workspace/${t}
           done
       - run: docker-compose -f .devcontainer/docker-compose.yml down -v
