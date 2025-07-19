@@ -8,7 +8,7 @@ if [ -d /tmp/.ssh ]; then
 fi
 
 cd /workspace
-python -m venv venv
+python3 -m venv venv
 ./venv/bin/pip install --upgrade pip
 PATH="/workspace/venv/bin:$PATH"
 ./venv/bin/pip install \
