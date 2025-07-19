@@ -5,4 +5,6 @@ services:
       - ./input:/input:ro
       - ./output:/output
     working_dir: /workspace
+    environment:
+      PYTHONPATH: /workspace
     entrypoint: ["python3", "scripts/burn_iso/burn_iso.py"]
