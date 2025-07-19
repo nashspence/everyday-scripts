@@ -23,7 +23,7 @@ def setup_logging(logfile: str, name: str | None = None) -> logging.Logger:
         datefmt="%Y-%m-%d %H:%M:%S UTC",
     )
     # always stamp in UTC
-    logging.Formatter.converter = lambda *args: time.gmtime(*args)
+    logging.Formatter.converter = time.gmtime
 
     fh = logging.FileHandler(logfile)
     fh.setFormatter(fmt)

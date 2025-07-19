@@ -7,9 +7,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     genisoimage \
+    dvd+rw-tools \
     udftools \
     xorriso \
     && rm -rf /var/lib/apt/lists/*
+
 
 WORKDIR /workspace
 COPY scripts ./scripts
