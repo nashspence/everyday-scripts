@@ -15,7 +15,10 @@ import pytest
 from scripts.burn_iso.burn_iso import _build_command
 
 
-@pytest.mark.skipif(shutil.which("docker") is None, reason="docker not available")  # type: ignore[misc]
+@pytest.mark.skipif(
+    shutil.which("docker") is None or os.environ.get("IMAGE") is None,
+    reason="docker or IMAGE not available",
+)  # type: ignore[misc]
 def test_container_dry_run() -> None:
     workdir = Path(__file__).parent
     compose_file = workdir / "docker-compose.yml"
