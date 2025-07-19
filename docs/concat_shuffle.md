@@ -49,9 +49,9 @@ The script prints a running FFmpeg command, then exits with **0** on success. ([
 
 ---
 
-## 5  Acceptance criteria (cross‑platform)
+## 5  Acceptance criteria
 
-All scenarios must pass on Linux, macOS, and Windows (WSL) **without altering this spec**.
+All scenarios must pass inside the Docker container on any host OS **without altering this spec**.
 
 | #     | Scenario & Pre‑conditions                                              | Steps (user → expected behaviour)                                                                      |
 | ----- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |

@@ -58,9 +58,8 @@ A UTF‑8 JSON file containing at minimum the keys FFmpeg prints:
 | **2** | **Missing input file**.                                       | 1 Pass a non‑existent `--in-file`.<br>2 Process exits ≠0.<br>3 `loudness.log` contains “No such file” (or FFmpeg equivalent).<br>4 No `metrics.json` is written.                                            |
 | **3** | **Unwritable output path** (e.g. read‑only dir).              | 1 Provide a path in an unwritable location.<br>2 Process exits ≠0.<br>3 `loudness.log` shows a “Permission denied” or similar filesystem error.                                                             |
 | **4** | **Invalid numeric target** (`--target-i 0` or extreme value). | 1 Run with an out‑of‑range value.<br>2 Process exits ≠0.<br>3 Log records FFmpeg validation error.                                                                                                          |
-| **5** | **FFmpeg not in PATH**.                                       | 1 Run with PATH cleared of FFmpeg.<br>2 Process exits ≠0.<br>3 Log shows “ffmpeg: command not found” (or Windows equivalent).                                                                               |
 
-All scenarios must pass without modifying this spec on **Linux**, **macOS**, and **Windows (WSL)**.
+All scenarios must pass unchanged when run inside the provided Docker container on any host OS.
 
 ---
 

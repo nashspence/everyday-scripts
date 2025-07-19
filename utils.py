@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import atexit
 import logging
-import os
 import sys
 import time
 from pathlib import Path
@@ -37,11 +36,6 @@ def setup_logging(logfile: str, name: str | None = None) -> logging.Logger:
     logger.info("Script started")
     atexit.register(lambda: logger.info("Script exited"))
     return logger
-
-
-def prepend_path() -> None:
-    """Modify ``PATH`` for the subprocesses invoked by the scripts."""
-    os.environ["PATH"] = "/opt/homebrew/bin:/usr/local/bin:" + os.environ["PATH"]
 
 
 def cleanup(build_dir: str | Path, logger: logging.Logger) -> None:

@@ -12,7 +12,7 @@ import re
 import subprocess
 from pathlib import Path
 from typing import Any, cast
-from utils import setup_logging, prepend_path
+from utils import setup_logging
 
 
 def extract_json(stderr: str) -> dict[str, Any]:
@@ -33,7 +33,6 @@ def main() -> None:
     ns = ap.parse_args()
 
     logger = setup_logging(ns.logfile, "loudnorm-pass1")
-    prepend_path()
 
     logger.info(f"PASS 1 analysing → target {ns.target_i} LUFS / {ns.target_tp} dBTP")
     cmd = [

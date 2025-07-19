@@ -13,10 +13,10 @@ Wraps **three helpers**—`make_shuffle_clips.py → concat_shuffle.py →
 | Python ≥ 3.8                  | Runs the wrapper & helpers.        |
 | FFmpeg 4.x (+ ffprobe)        | All trimming / concatenation.      |
 | ≈ 2 × final size free disk    | Scratch clips live in `--tmp-dir`. |
-| macOS / Linux / Windows (WSL) | Fully cross‑platform.              |
+| macOS / Linux / Windows (WSL) | Run inside Docker on any host OS.   |
 | Helper scripts co‑located     | Wrapper execs them directly.       |
 
-The wrapper prepends `/opt/homebrew/bin:/usr/local/bin` to `$PATH` so Homebrew FFmpeg is always found on macOS.
+The wrapper previously adjusted `PATH` for Homebrew. Docker images now provide FFmpeg, so no adjustment is required.
 
 ---
 
@@ -68,7 +68,7 @@ Every flag of **all three helpers** can be supplied here; the wrapper validates,
 
 ---
 
-## 6 Acceptance criteria (cross‑platform)
+## 6 Acceptance criteria
 
 | #      | Scenario                                                | Expected behaviour                                                                    |
 | ------ | ------------------------------------------------------- | ------------------------------------------------------------------------------------- |
@@ -82,13 +82,12 @@ Every flag of **all three helpers** can be supplied here; the wrapper validates,
 | **8**  | **Custom logfile**                                      | All three helpers append to the same file.                                            |
 | **9**  | **No args**                                             | Prints “❌ No input files”, exits 1; no tmp dir made.                                  |
 | **10** | **Invalid numeric combo** — `--min-clip 8 --max-clip 5` | Wrapper forwards, helper rejects; exit 1.                             |
-| **11** | **Missing FFmpeg**                                      | Helper error surfaced; pipeline exits 1.                                              |
-| **12** | **Disk full in tmp dir**                                | Graceful abort; tmp cleaned; exit 1.                                                  |
-| **13** | **Large batch (≥ 50 files)**                            | Runtime scales linearly; length correct; exit 0.                                      |
-| **14** | **Log integrity**                                       | Log contains clearly delimited sections *extract / concat / cleanup* and final paths. |
-| **15** | **Cleanup**                                             | After any success `--build-dir` no longer exists.                                     |
+| **11** | **Disk full in tmp dir**                                | Graceful abort; tmp cleaned; exit 1.                                                  |
+| **12** | **Large batch (≥ 50 files)**                            | Runtime scales linearly; length correct; exit 0.                                      |
+| **13** | **Log integrity**                                       | Log contains clearly delimited sections *extract / concat / cleanup* and final paths. |
+| **14** | **Cleanup**                                             | After any success `--build-dir` no longer exists.                                     |
 
-All scenarios **must pass unchanged** on Linux, macOS, and Windows (WSL). At no time may the pipeline alter or delete the user’s original media.
+All scenarios **must pass unchanged** when executed via Docker. At no time may the pipeline alter or delete the user’s original media.
 
 ---
 

@@ -15,7 +15,7 @@ import math
 import random
 import subprocess
 from pathlib import Path
-from utils import setup_logging, prepend_path
+from utils import setup_logging
 
 TARGET_SEC = 600  # total montage length
 MIN_CLIP = 2  # inclusive
@@ -54,7 +54,6 @@ def main() -> None:
     ns = ap.parse_args()
 
     logger = setup_logging(ns.logfile, "shuffle-extract")
-    prepend_path()
     files = [Path(f).resolve() for f in ns.files]
 
     # ------------------------------------------------------------------ 1 ‑ durations & prefix sums

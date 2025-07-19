@@ -9,7 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 import subprocess
-from utils import setup_logging, prepend_path
+from utils import setup_logging
 
 
 def main() -> None:
@@ -23,7 +23,6 @@ def main() -> None:
     ns = ap.parse_args()
 
     logger = setup_logging(ns.logfile, "loudnorm-pass2")
-    prepend_path()
 
     m = json.loads(open(ns.analysis_json).read())
     for k in ("input_i", "input_tp", "input_lra", "input_thresh", "target_offset"):

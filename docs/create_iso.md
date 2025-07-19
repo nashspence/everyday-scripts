@@ -14,7 +14,7 @@ Unless you say otherwise, the script stamps the ISO with the **current UTC times
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | **Build directory** (the files you want on the disc) | Source content.                                                                                                          |
 | **Python ≥ 3.8**                                     | Script runtime.                                                                                                          |
-| **Imaging utility**                                  | *macOS* → `hdiutil` (built‑in) • *Linux/WSL* → `xorriso` **or** `genisoimage` + `udftools` • *Windows* → run under WSL2. |
+| **Imaging utility**                                  | `xorriso` or `genisoimage` + `udftools` (provided by the Docker image). |
 | ≥ 10 GB free space                                   | Working room for temp files + final ISO.                                                                                 |
 
 If any required tool is missing, the script aborts early with a clear error.
@@ -38,7 +38,7 @@ If any required tool is missing, the script aborts early with a clear error.
 ## 4 Workflow (high‑level)
 
 1. **Validate inputs** — build dir exists & readable; iso path parent writable; `--volume-label` (if given) meets length/charset rules.
-2. **Pick backend** — `hdiutil` on macOS, otherwise `xorriso` or the genisoimage + mkudffs pair.
+2. **Pick backend** — the Docker image uses `xorriso` (or `genisoimage` + `mkudffs`).
 3. **Create image** — hybrid UDF + ISO‑9660, volume label set to either the supplied string or the auto timestamp.
 4. **Post‑build check** — ensure image exists and is > 0 bytes.
 5. **Log & exit** — exit 0 on success; first failure returns non‑zero.
@@ -80,11 +80,9 @@ The first command might generate a volume label like `20250718T194610Z`.
 | **8**  | **ISO exists, no --force**       | Second run → abort; “File exists”; exit 1.                                                |
 | **9**  | **ISO exists, with --force**     | Second run with `--force` → file overwritten; exit 0.                                     |
 | **10** | **Logfile unwritable**           | Read‑only logfile dir → abort; “Cannot write logfile”; exit 1.                            |
-| **11** | **Toolchain missing**            | Rename `xorriso`/`hdiutil`; run → abort; “Required tool not found”; exit 1.               |
-| **12** | **Large tree** (> 50 k files)    | Build completes within 2 × a plain copy; exit 0.                                          |
-| **13** | **Cross‑platform parity**        | Scenario 1 passes on macOS (Intel & Apple Silicon), Ubuntu 22, CentOS 9, Windows 11 WSL2. |
+| **11** | **Large tree** (> 50 k files)    | Build completes within 2 × a plain copy; exit 0.                                          |
 
-All thirteen scenarios **must pass unmodified**; any failure must leave existing data untouched **and** exit with a non‑zero status.
+All eleven scenarios **must pass unmodified** in Docker; any failure must leave existing data untouched **and** exit with a non‑zero status.
 
 ---
 

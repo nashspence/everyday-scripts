@@ -8,7 +8,7 @@ import argparse
 import subprocess
 import sys
 from pathlib import Path
-from utils import setup_logging, prepend_path
+from utils import setup_logging
 
 
 def main() -> None:
@@ -20,7 +20,6 @@ def main() -> None:
     ns = ap.parse_args()
 
     logger = setup_logging(ns.logfile, "iso")
-    prepend_path()
 
     build_dir = Path(ns.build_dir)
     iso_path = Path(ns.iso_path)

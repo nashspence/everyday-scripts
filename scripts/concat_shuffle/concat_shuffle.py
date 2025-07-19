@@ -8,7 +8,7 @@ Usage:
 from __future__ import annotations
 import argparse
 import subprocess
-from utils import setup_logging, prepend_path
+from utils import setup_logging
 
 
 def main() -> None:
@@ -19,7 +19,6 @@ def main() -> None:
     ns = ap.parse_args()
 
     logger = setup_logging(ns.logfile, "shuffle-concat")
-    prepend_path()
 
     subprocess.run(
         [
