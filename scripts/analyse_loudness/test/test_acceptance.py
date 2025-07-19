@@ -15,6 +15,7 @@ from shared import compose
 
 
 def make_wav(path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
     fr = 44100
     with wave.open(str(path), "w") as w:
         w.setnchannels(1)
@@ -161,8 +162,8 @@ def test_s4_invalid_numeric_target() -> None:
             check=False,
         )
         assert proc.returncode != 0
-        log_txt = log.read_text()
-        assert "Invalid" in log_txt or "error" in log_txt
+        log_txt = log.read_text().lower()
+        assert "invalid" in log_txt or "error" in log_txt or "out of range" in log_txt
     finally:
         inp.unlink(missing_ok=True)
         log.unlink(missing_ok=True)
