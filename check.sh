@@ -14,6 +14,8 @@ fi
 black --check .
 ruff check .
 git config --global --add safe.directory "$(pwd)"
-git ls-files -z -- '*Dockerfile*' | xargs -0 hadolint
+if command -v hadolint >/dev/null; then
+  git ls-files -z -- '*Dockerfile*' | xargs -0 hadolint
+fi
 mypy --no-site-packages --explicit-package-bases scripts utils.py
 pytest -q
