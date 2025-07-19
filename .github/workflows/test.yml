@@ -16,6 +16,17 @@ jobs:
           sudo apt-get install -y docker-compose
 
       - run: docker-compose -f .devcontainer/docker-compose.yml up --build -d
-      - run: docker exec ${REPO}-devcontainer /usr/local/bin/postStart.sh
+      - run: docker exec ${REPO}-devcontainer postStart.sh
       - run: docker exec ${REPO}-devcontainer ./check.sh
+      - name: Build release container
+        run: docker exec ${REPO}-devcontainer docker build -f Dockerfile -t ${REPO}:ci --build-arg COMMIT_SHA=$(git rev-parse HEAD) .
+      - name: Run acceptance tests
+        run: |
+          set -euo pipefail
+          TESTS=$(find scripts -path '*/test/test_acceptance.py')
+          docker exec \
+            -e IMAGE=${REPO}:ci \
+            -e COMMIT_SHA=$(git rev-parse HEAD) \
+            ${REPO}-devcontainer \
+            bash -lc "source venv/bin/activate && pytest -q ${TESTS}" 
       - run: docker-compose -f .devcontainer/docker-compose.yml down -v
