@@ -13,5 +13,6 @@ fi
 
 black --check .
 ruff check .
+git ls-files -z -- '*Dockerfile*' | xargs -0 hadolint
 mypy --no-site-packages --explicit-package-bases scripts utils.py
 pytest -q
