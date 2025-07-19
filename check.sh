@@ -13,5 +13,8 @@ fi
 
 black --check .
 ruff check .
+git config --global --add safe.directory "$(pwd)"
+# Lint all Dockerfiles and fail on any issue
+git ls-files -z -- '*Dockerfile*' | xargs -0 hadolint
 mypy --no-site-packages --explicit-package-bases scripts utils.py
 pytest -q
