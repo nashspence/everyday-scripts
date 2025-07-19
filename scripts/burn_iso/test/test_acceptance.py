@@ -7,9 +7,40 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
+from shared import compose
+import shutil
+
 import pytest
 
 from scripts.burn_iso.burn_iso import _build_command
+
+
+@pytest.mark.skipif(
+    shutil.which("docker") is None or os.environ.get("IMAGE") is None,
+    reason="docker or IMAGE not available",
+)  # type: ignore[misc]
+def test_container_dry_run() -> None:
+    workdir = Path(__file__).parent
+    compose_file = workdir / "docker-compose.yml"
+    iso = workdir / "input" / "dummy.iso"
+    iso.write_bytes(b"iso")
+    try:
+        proc = compose(
+            compose_file,
+            workdir,
+            "run",
+            "--rm",
+            "burn_iso",
+            "--iso-path",
+            "/input/dummy.iso",
+            "--dry-run",
+            capture_output=True,
+        )
+        assert proc.returncode == 0
+        assert "growisofs" in proc.stdout.decode()
+    finally:
+        iso.unlink()
+        compose(compose_file, workdir, "down", "-v", check=False)
 
 
 # Scenario 10 – Dry-run safety
