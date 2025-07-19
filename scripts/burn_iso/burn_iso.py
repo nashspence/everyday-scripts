@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Burn a Blu‑ray ISO image according to :doc:`../docs/burn_iso.md`.
 
-This script implements a tiny subset of the spec so automated tests can run in
-CI. Only ``--dry-run`` is supported – no actual hardware commands are executed.
+The implementation is intentionally minimal so automated tests can run without
+touching hardware. Use ``--dry-run`` during CI runs. When executed normally the
+command produced by ``growisofs`` will run on the host system.
 """
 
 from __future__ import annotations

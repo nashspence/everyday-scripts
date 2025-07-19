@@ -28,7 +28,7 @@ Typical use‑case: the final stage of the body‑cam archiving pipeline where a
 | `--iso-path PATH`          |     ✅    | `--iso-path footage.iso` | Path to the source image.                                          |
 | `--verify / --skip-verify` |     ☐    | `--skip-verify`          | Verification **on by default**. Disable to save time.              |
 | `--logfile FILE`           |     ☐    | `--logfile burn.log`     | Redirect console output to `FILE` **and** keep a copy on `stdout`. |
-| `--device DEV`             |     ☐    | `--device /dev/sr0`      | Override auto‑detected burner (Linux/WSL only).                    |
+| `--device DEV`             |     ☐    | `--device /dev/sr0`      | Override auto‑detected burner.                    |
 | `--speed X`                |     ☐    | `--speed 4`              | Limit write speed; lower = safer.                                  |
 | `--dry-run`                |     ☐    | (no args)                | Parse arguments & show the command that *would* run, then exit 0.  |
 
@@ -44,11 +44,8 @@ Typical use‑case: the final stage of the body‑cam archiving pipeline where a
      *“💿  No disc detected in `<DEV>`. Please insert a blank BD‑R/RE… (press Ctrl‑C to cancel)”*
      and polls every 3 s until a disc appears. No timeout.
 4. **Pre‑flight checks** — verify disc is blank and capacity ≥ ISO size.
-5. **Burn** —
-
-   * macOS → `hdiutil burn …`
-   * Linux/WSL → `growisofs -dvd-compat -speed=X -Z DEV=ISO`
-6. **(Optional) Verification** — skipped when `--skip-verify` supplied. Otherwise read disc back (`hdiutil verify` | `readom --verify`) and compare SHA‑256 to the original.
+5. **Burn** — run `growisofs -dvd-compat -speed=X -Z DEV=ISO`
+6. **(Optional) Verification** — skipped when `--skip-verify` supplied. Otherwise read disc back (`readom --verify`) and compare SHA‑256 to the original.
 7. **Log summary** — success or first encountered failure.
 
 The script exits **0** only when every executed stage succeeds.
@@ -79,7 +76,7 @@ The script exits **0** only when every executed stage succeeds.
 | **6**  | **No optical drive**                                            | 1 Run on machine without BD writer → aborts; exit 1; log “No drive detected”.                                        |
 | **7**  | **Verify mismatch** (flip one byte after burn)                  | 1 Run default → verification fails; exit 2; log “Checksum mismatch”.                                                 |
 | **8**  | **Permission denied for logfile**                               | 1 Point `--logfile` to unwritable location → meaningful error; exit 1; no burn starts.                               |
-| **9**  | **Linux path override**                                         | 1 Specify `--device /dev/sr1` with disc → script uses that drive successfully.                                       |
+| **9**  | **Device override**                                         | 1 Specify `--device /dev/sr1` with disc → script uses that drive successfully.                                       |
 | **10** | **Dry‑run safety**                                              | 1 Run with `--dry-run` → no hardware interaction; exit 0; printed command matches selected options.                  |
 
 All ten scenarios **must pass unmodified** when executed through Docker on any host OS.

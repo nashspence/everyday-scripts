@@ -109,12 +109,10 @@ def test_s8_logfile_permission_denied(tmp_path: Path) -> None:
     assert "Permission" in proc.stderr or "FileNotFoundError" in proc.stderr
 
 
-# Scenario 9 – Linux path override
+# Scenario 9 – Device override
 
 
-def test_s9_linux_device_override(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
+def test_s9_device_override(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     iso = tmp_path / "dummy.iso"
     iso.write_bytes(b"iso")
     monkeypatch.setattr("platform.system", lambda: "Linux")
