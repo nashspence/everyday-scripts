@@ -1,0 +1,10 @@
+services:
+  analyse_loudness:
+    image: ${IMAGE}
+    volumes:
+      - ./input:/input:ro
+      - ./output:/output
+    working_dir: /workspace
+    environment:
+      PYTHONPATH: /workspace
+    entrypoint: ["python3", "scripts/analyse_loudness/analyse_loudness.py"]
