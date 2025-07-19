@@ -18,4 +18,16 @@ jobs:
       - run: docker-compose -f .devcontainer/docker-compose.yml up --build -d
       - run: docker exec ${REPO}-devcontainer /usr/local/bin/postStart.sh
       - run: docker exec ${REPO}-devcontainer ./check.sh
+      - name: Build release container
+        run: docker exec ${REPO}-devcontainer docker build -f Dockerfile -t ${REPO}:ci --build-arg COMMIT_SHA=$(git rev-parse HEAD) .
+      - name: Run acceptance tests
+        run: |
+          set -euo pipefail
+          TESTS=$(find scripts -path '*/test/test_acceptance.py')
+          for t in $TESTS; do
+            docker exec ${REPO}-devcontainer docker run --rm \
+              -v /workspace:/workspace \
+              ${REPO}:ci \
+              bash -lc "pytest -q /workspace/${t}"
+          done
       - run: docker-compose -f .devcontainer/docker-compose.yml down -v
