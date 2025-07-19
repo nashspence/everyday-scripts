@@ -18,12 +18,16 @@ def setup_logging(logfile: str, name: str | None = None) -> logging.Logger:
         logger.handlers.clear()
 
     logger.setLevel(logging.INFO)
+    if hasattr(time, "tzset"):
+        # honour TZ environment variable when present
+        time.tzset()
+
     fmt = logging.Formatter(
         "%(asctime)s ▶ %(levelname)s ▶ %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S UTC",
+        datefmt="%Y-%m-%d %H:%M:%S %Z",
     )
-    # always stamp in UTC
-    logging.Formatter.converter = time.gmtime
+    # use local time so logs respect configured TZ
+    logging.Formatter.converter = time.localtime
 
     fh = logging.FileHandler(logfile)
     fh.setFormatter(fmt)
