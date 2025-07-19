@@ -13,6 +13,7 @@ fi
 
 black --check .
 ruff check .
+git config --global --add safe.directory "$(git rev-parse --show-toplevel)"
 git ls-files -z -- '*Dockerfile*' | xargs -0 hadolint
 mypy --no-site-packages --explicit-package-bases scripts utils.py
 pytest -q
