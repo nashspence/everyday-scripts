@@ -2,12 +2,12 @@ FROM cruizba/ubuntu-dind:noble-28.2.1
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# hadolint ignore=DL3008
+# Pin versions to satisfy hadolint DL3008
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 \
-    python3-venv \
-    python3-pip \
-    git \
+    python3=3.12.3-0ubuntu2 \
+    python3-venv=3.12.3-0ubuntu2 \
+    python3-pip=24.0+dfsg-1ubuntu1.2 \
+    git=1:2.43.0-1ubuntu7.3 \
     && rm -rf /var/lib/apt/lists/*
 
 # install hadolint for Dockerfile linting
