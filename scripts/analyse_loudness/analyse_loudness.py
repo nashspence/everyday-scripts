@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shlex
 import subprocess
 from pathlib import Path
 from typing import Any, cast
@@ -34,7 +35,9 @@ def main() -> None:
 
     logger = setup_logging(ns.logfile, "loudnorm-pass1")
 
-    logger.info(f"PASS 1 analysing → target {ns.target_i} LUFS / {ns.target_tp} dBTP")
+    logger.info(
+        "PASS 1 analysing -> target %s LUFS / %s dBTP" % (ns.target_i, ns.target_tp)
+    )
     cmd = [
         "ffmpeg",
         "-hide_banner",
@@ -48,10 +51,19 @@ def main() -> None:
         "null",
         "-",
     ]
-    proc = subprocess.run(cmd, stderr=subprocess.PIPE, text=True, check=True)
+    logger.info("Command: %s", " ".join(shlex.quote(p) for p in cmd))
+    try:
+        proc = subprocess.run(cmd, stderr=subprocess.PIPE, text=True, check=True)
+    except subprocess.CalledProcessError as exc:  # pragma: no cover
+        logger.error(exc.stderr.strip())
+        raise SystemExit(exc.returncode)
     metrics = extract_json(proc.stderr)
 
-    Path(ns.out_json).write_text(json.dumps(metrics, indent=2))
+    try:
+        Path(ns.out_json).write_text(json.dumps(metrics, indent=2))
+    except OSError as exc:  # pragma: no cover
+        logger.error(str(exc))
+        raise SystemExit(1)
     logger.info(f"Metrics saved to {ns.out_json}")
 
 
