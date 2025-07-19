@@ -14,7 +14,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from utils import setup_logging, prepend_path
+from utils import setup_logging
 
 DISC_BYTES = 25_000_000_000  # target BD‑R size
 SAFETY_BYTES = 500 * 1024 * 1024  # keep ~500 MiB free
@@ -46,7 +46,6 @@ def main() -> None:
     ns = ap.parse_args()
 
     logger = setup_logging(ns.logfile, "prepare")
-    prepend_path()
 
     files = [Path(f) for f in ns.files]
     if not files:

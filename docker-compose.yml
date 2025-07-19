@@ -1,0 +1,10 @@
+services:
+  everyday-scripts:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: everyday-scripts
+    volumes:
+      - ./docker-data:/data
+    tty: true
+    stdin_open: true

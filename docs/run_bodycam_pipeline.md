@@ -90,11 +90,11 @@ See each tool’s doc for exact flags and edge‑cases — the pipeline merely o
 |  **5** | **Sub‑step failure propagates** (e.g. burner missing).        | 1 Disconnect BD writer → run → burn stage fails → pipeline exits with non‑zero code from `burn_iso.py`; log states failing stage; build dir retained for analysis. |
 |  **6** | **User abort (Ctrl‑C)** during any stage.                     | Signal forwarded → current sub‑script stops → pipeline exits 130; no further stages run; partial ISO not burned; temp dir left intact.                             |
 |  **7** | **Repeat runs** — Execute twice within 1 s.                   | Each run generates unique build dir, ISO, log names (timestamped) with no collisions.                                                                              |
-|  **8** | **Cross‑platform** — macOS, Linux, Windows (WSL 2).           | Scenarios 1, 2, 5 & 6 behave identically; all logs show correct paths (POSIX or Windows as applicable).                                                            |
+|  **8** | **Docker usage** — run inside container on any OS.           | Scenarios 1, 2, 5 & 6 behave identically when executed via Docker.                                                            |
 |  **9** | **Pass‑through flag honoured** — e.g. skip verification.      | 1 Run with `--burn-skip-verify` → pipeline passes flag to burn stage; log confirms verification skipped; exit 0.                                                   |
 | **10** | **Invalid pass‑through flag** — typo.                         | 1 Run with `--iso-volumelabel ABC` → parser aborts at start; meaningful “unknown option” message; exit 1; no files created.                                        |
 
-> **All ten scenarios must pass unchanged on every supported OS.** Any failure stops the pipeline immediately and surfaces the root cause.
+> **All ten scenarios must pass unchanged when run inside the Docker container.** Any failure stops the pipeline immediately and surfaces the root cause.
 
 ---
 

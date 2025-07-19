@@ -14,7 +14,7 @@ You feed it any media file; it gives you back an AAC‑encoded copy whose audio 
 | FFmpeg 5 + in `$PATH`              | Performs the heavy lifting            |
 | Write access to the working folder | Copies, logs and temp files live here |
 
-> *The script autodetects platform (macOS, Linux, Windows + WSL) and aborts early if FFmpeg is missing.*
+> *Run inside the Docker container; FFmpeg is pre-installed so no host detection is required.*
 
 ---
 
@@ -67,7 +67,7 @@ You feed it any media file; it gives you back an AAC‑encoded copy whose audio 
 | **9**  | **Video passthrough**                                    | 1 Input `.mp4` with video track → audio normalised; video stream copied bit‑for‑bit; container fast‑start flag preserved; exit 0. |
 | **10** | **Temp metrics cleanup**                                 | 1 Run script → temp `loudnorm_*.json` deleted on success or failure.                                                              |
 
-All ten scenarios **must pass, unmodified, on macOS, Linux, and Windows (WSL).** If any step fails the original file remains untouched and the exit status is non‑zero.
+All ten scenarios **must pass, unmodified, when run in Docker on any host OS.** If any step fails the original file remains untouched and the exit status is non‑zero.
 
 ---
 

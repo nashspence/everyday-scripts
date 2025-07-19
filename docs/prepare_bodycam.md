@@ -19,7 +19,7 @@ Copy **or** re‑encode a folder of body‑camera clips so their combined size n
 | Python ≥ 3.8                                        | Script runtime                  |
 | FFmpeg ≥ 6.0 with `ffprobe`, `libsvtav1`, `libopus` | Media probing and (re)encoding  |
 | Free disk space ≥ (total input size + 1 GB)         | Working files and logs          |
-| Linux, macOS, or Windows WSL                        | All commands are cross‑platform |
+| Linux, macOS, or Windows WSL                        | Run the Docker image on any platform |
 
 Missing tools or versions abort execution with a clear error message.
 
@@ -137,7 +137,7 @@ All numeric arguments must be positive integers.
 
 ## 8 Acceptance criteria
 
-The script **must pass** every scenario on Linux, macOS, and Windows (WSL).
+The script **must pass** every scenario when executed through Docker on any host OS.
 
 | #      | Scenario                    | Preconditions                                                      | Expected outcome                                                       |
 | ------ | --------------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------- |
@@ -152,7 +152,6 @@ The script **must pass** every scenario on Linux, macOS, and Windows (WSL).
 | **9**  | Safety for delete‑originals | `--delete-originals yes`; kill job mid‑run                         | Originals remain until a run exits 0.                                  |
 | **10** | Basic copy fit              | Defaults, total input ≤ 24.5 GB                                    | COPY mode, exit 0, SHA‑256 of each copy matches original.              |
 | **11** | Basic encode fit            | Defaults, total input > 24.5 GB                                    | ENCODE mode, exit 0, total outputs ≤ 24.5 GB.                          |
-| **12** | Missing ffprobe             | Rename ffprobe, run                                                | Exit 1, log shows missing dependency.                                  |
 
 ---
 

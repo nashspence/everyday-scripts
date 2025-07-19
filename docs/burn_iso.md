@@ -15,9 +15,9 @@ Typical use‑case: the final stage of the body‑cam archiving pipeline where a
 | **Blank disc**                    | ISO → disc must fit entirely.                                                        |
 | **ISO path**                      | Absolute/relative path to the image you intend to burn.                              |
 | Python ≥ 3.8                      | Script runtime.                                                                      |
-| OS utilities                      | *macOS*: `hdiutil` • *Linux*: `growisofs` + `readom` • *Windows/WSL*: same as Linux. |
+> Run the script inside Docker; required tools are pre-installed.
+| OS utilities | `growisofs` and `readom` (included in the Docker image). |
 
-> The script autodetects your platform and aborts early if required tools are missing.
 
 ---
 
@@ -81,10 +81,8 @@ The script exits **0** only when every executed stage succeeds.
 | **8**  | **Permission denied for logfile**                               | 1 Point `--logfile` to unwritable location → meaningful error; exit 1; no burn starts.                               |
 | **9**  | **Linux path override**                                         | 1 Specify `--device /dev/sr1` with disc → script uses that drive successfully.                                       |
 | **10** | **Dry‑run safety**                                              | 1 Run with `--dry-run` → no hardware interaction; exit 0; printed command matches selected options.                  |
-| **11** | **macOS utility absence**                                       | 1 Rename `hdiutil`; run script → aborts; exit 1; message instructs to restore tool.                                  |
-| **12** | **Windows WSL**                                                 | 1 Run inside WSL with `/dev/sr0` accessible → scenarios 1 & 3 pass identically to Linux.                             |
 
-All twelve scenarios **must pass unmodified** on Linux, macOS, and Windows (WSL).
+All ten scenarios **must pass unmodified** when executed through Docker on any host OS.
 If any step fails, the script must **leave the disc untouched** or clearly indicate failure.
 
 ---

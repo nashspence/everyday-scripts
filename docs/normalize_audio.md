@@ -14,9 +14,9 @@ Create a version of any A/V file that **meets EBU R128 (or your own) loudness 
 | Python ≥ 3.8                                         | Script runtime                                        |
 | Readable **input media** (`.wav`, `.mov`, `.mp4`, …) | Source to be normalised                               |
 | Writable **output location**                         | Destination file                                      |
-| macOS • Linux • Windows (WSL)                        | Fully supported                                       |
+| macOS • Linux • Windows (WSL)                        | Run inside Docker on any host OS                       |
 
-> `prepend_path()` automatically adds common Homebrew paths so FFmpeg is found on macOS/Linux.
+Docker images include FFmpeg so no host installation is required.
 
 ---
 
@@ -69,10 +69,8 @@ Create a version of any A/V file that **meets EBU R128 (or your own) loudness 
 | **5**  | **Metrics missing key**            | Delete `input_tp` → RuntimeError; exit 1; log “Missing key in metrics”.                                |
 | **6**  | **Input file absent**              | Bad `--in-file` → FFmpeg fails; exit 1; log relevant error.                                            |
 | **7**  | **Output unwritable**              | Path in read‑only dir → FFmpeg fails; exit 1; OS error in log.                                         |
-| **8**  | **FFmpeg not in PATH**             | Rename `ffmpeg` → subprocess error; exit 1; log instructs to install/restore.                          |
-| **9**  | **Custom loudness**                | `--target-i -20 --target-tp -2` → output meets those limits.                                           |
-| **10** | **Output file exists**             | Provide existing path → file replaced; new output passes #1 checks.                                    |
-| **11** | **Windows WSL**                    | Run on same media as #1 → identical behaviour; no path issues.                                         |
-| **12** | **Pipeline regression**            | Run pass 1 → pass 2 on ten clips → zero errors; video streams SHA‑256 match originals (audio differs). |
+| **8**  | **Custom loudness**                | `--target-i -20 --target-tp -2` → output meets those limits.                                           |
+| **9** | **Output file exists**             | Provide existing path → file replaced; new output passes #1 checks.                                    |
+| **10** | **Pipeline regression**            | Run pass 1 → pass 2 on ten clips → zero errors; video streams SHA‑256 match originals (audio differs). |
 
-All twelve scenarios **must pass unchanged** on Linux, macOS, and Windows (WSL). Any failure must leave source media untouched or clearly report the error.
+All ten scenarios **must pass unchanged** when executed via Docker on any host OS. Any failure must leave source media untouched or clearly report the error.

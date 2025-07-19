@@ -7,7 +7,7 @@ Generate a **chronological‑but‑shuffled** montage: every clip is taken from 
 ## 1 Why use it?
 * **Fast daily review** – skim hours of raw footage in minutes.  
 * **Key‑frame safe** – cuts always begin on key‑frames, so the clips can later be concatenated losslessly.  
-* **Platform‑agnostic** – pure Python + FFmpeg; runs on Linux, macOS, and Windows (WSL).
+* **Platform-agnostic** – run the Docker image on Linux, macOS or Windows.
 
 ---
 
@@ -98,10 +98,9 @@ clip_list.txt     # ready for: ffmpeg -f concat -safe 0 -i clip_list.txt -c copy
 | **4** | **Key‑frame integrity**                                    | 1 Concatenate with `ffmpeg -f concat -safe 0 -i clip_list.txt -c copy out.mkv`.<br>2 `ffmpeg` shows “Stream copy”, zero re‑encode.                                       |
 | **5** | **Invalid numeric combo**                                  | 1 Run `--min-clip 8 --max-clip 5`.<br>2 Script aborts non‑zero; stderr explains “MIN\_CLIP must be ≤ MAX\_CLIP”.                                                         |
 | **6** | **Total footage shorter than TARGET\_SEC**                 | 1 Provide sources totaling < TARGET\_SEC.<br>2 Script exits non‑zero; message “source shorter than requested target”.                                                    |
-| **7** | **Missing ffmpeg / ffprobe**                               | 1 Temporarily remove them from `$PATH`.<br>2 Exit non‑zero; log prints failing command.                                                                                  |
-| **8** | **Unwritable tmp‑dir**                                     | 1 Pass `--tmp-dir` pointing to read‑only path.<br>2 Exit non‑zero; log: “permission denied”.                                                                             |
+| **7** | **Unwritable tmp‑dir**                                     | 1 Pass `--tmp-dir` pointing to read‑only path.<br>2 Exit non‑zero; log: “permission denied”.                                                                             |
 
-All scenarios must pass unchanged on Linux, macOS, and Windows (WSL).
+All scenarios must pass unchanged when run via Docker on any host OS.
 
 ---
 

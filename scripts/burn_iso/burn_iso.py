@@ -8,40 +8,25 @@ CI. Only ``--dry-run`` is supported – no actual hardware commands are executed
 from __future__ import annotations
 
 import argparse
-import platform
 import shlex
 import shutil
 import subprocess
 from pathlib import Path
 
-from utils import prepend_path, setup_logging
+from utils import setup_logging
 
 
 def _build_command(
     *, iso: Path, verify: bool, device: str | None, speed: int | None
 ) -> list[str]:
-    sys = platform.system().lower()
-    if sys == "darwin":
-        if shutil.which("hdiutil") is None:
-            raise FileNotFoundError("hdiutil not found")
-        cmd = ["hdiutil", "burn", "-verbose"]
-        cmd += ["-speed", str(speed or "max")]
-        if verify:
-            cmd.append("-verifyburn")
-        cmd.append(str(iso))
-        return cmd
-
-    if sys.startswith("linux") or "microsoft" in platform.release().lower():
-        if shutil.which("growisofs") is None:
-            raise FileNotFoundError("growisofs not found")
-        dev = device or "/dev/sr0"
-        cmd = ["growisofs", "-dvd-compat"]
-        if speed:
-            cmd.append(f"-speed={speed}")
-        cmd += ["-Z", f"{dev}={iso}"]
-        return cmd
-
-    raise NotImplementedError(f"Unsupported platform: {platform.system()}")
+    if shutil.which("growisofs") is None:
+        raise FileNotFoundError("growisofs not found")
+    dev = device or "/dev/sr0"
+    cmd = ["growisofs", "-dvd-compat"]
+    if speed:
+        cmd.append(f"-speed={speed}")
+    cmd += ["-Z", f"{dev}={iso}"]
+    return cmd
 
 
 def main() -> None:
@@ -62,7 +47,6 @@ def main() -> None:
         if ns.logfile
         else setup_logging("burn_iso.log", "burn")
     )
-    prepend_path()
 
     iso = Path(ns.iso_path)
     if not iso.is_file():

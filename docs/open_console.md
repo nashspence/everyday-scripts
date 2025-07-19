@@ -28,7 +28,7 @@ Single argument: path to the logfile.
 | **1** | **Window opens** | 1 Run script with writable log path.<br>2 Terminal launches and tails the file. |
 | **2** | **Bad path** | 1 Pass unwritable path.<br>2 Script prints error and exits non-zero. |
 
-All scenarios must pass on Linux, macOS, and Windows (WSL) without altering this spec.
+All scenarios must pass when invoked via Docker on any host OS without altering this spec.
 
 ---
 
