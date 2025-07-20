@@ -26,6 +26,36 @@ def run_script(
     )
 
 
+def make_clip(path: Path) -> None:
+    subprocess.run(
+        [
+            "docker",
+            "run",
+            "--rm",
+            "--entrypoint",
+            "ffmpeg",
+            "-v",
+            f"{path.parent}:/data",
+            "-w",
+            "/data",
+            os.environ["IMAGE"],
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-f",
+            "lavfi",
+            "-i",
+            "testsrc=duration=1:size=16x16:rate=1",
+            "-g",
+            "1",
+            "-pix_fmt",
+            "yuv420p",
+            path.name,
+        ],
+        check=True,
+    )
+
+
 @pytest.mark.skipif(os.environ.get("IMAGE") is None, reason="IMAGE not available")  # type: ignore[misc]
 def test_container_happy_path() -> None:
     workdir = Path(__file__).parent
@@ -94,28 +124,12 @@ def test_container_happy_path() -> None:
         compose(compose_file, workdir, "down", "-v", check=False)
 
 
+@pytest.mark.skipif(os.environ.get("IMAGE") is None, reason="IMAGE not available")  # type: ignore[misc]
 def test_s1_happy_path(tmp_path: Path) -> None:
     clip1 = tmp_path / "c1.mkv"
     clip2 = tmp_path / "c2.mkv"
     for clip in (clip1, clip2):
-        subprocess.run(
-            [
-                "ffmpeg",
-                "-hide_banner",
-                "-loglevel",
-                "error",
-                "-f",
-                "lavfi",
-                "-i",
-                "testsrc=duration=1:size=16x16:rate=1",
-                "-g",
-                "1",
-                "-pix_fmt",
-                "yuv420p",
-                str(clip),
-            ],
-            check=True,
-        )
+        make_clip(clip)
     list_file = tmp_path / "list.txt"
     list_file.write_text(f"file '{clip1}'\nfile '{clip2}'\n")
     log = tmp_path / "log.txt"
@@ -134,26 +148,10 @@ def test_s1_happy_path(tmp_path: Path) -> None:
     assert "Montage saved" in log.read_text()
 
 
+@pytest.mark.skipif(os.environ.get("IMAGE") is None, reason="IMAGE not available")  # type: ignore[misc]
 def test_s2_missing_clip(tmp_path: Path) -> None:
     clip1 = tmp_path / "c1.mkv"
-    subprocess.run(
-        [
-            "ffmpeg",
-            "-hide_banner",
-            "-loglevel",
-            "error",
-            "-f",
-            "lavfi",
-            "-i",
-            "testsrc=duration=1:size=16x16:rate=1",
-            "-g",
-            "1",
-            "-pix_fmt",
-            "yuv420p",
-            str(clip1),
-        ],
-        check=True,
-    )
+    make_clip(clip1)
     list_file = tmp_path / "list.txt"
     list_file.write_text(f"file '{clip1}'\nfile '{tmp_path/'missing.mkv'}'\n")
     log = tmp_path / "log.txt"
@@ -189,26 +187,10 @@ def test_s3_unreadable_list(tmp_path: Path) -> None:
     assert not out_vid.exists()
 
 
+@pytest.mark.skipif(os.environ.get("IMAGE") is None, reason="IMAGE not available")  # type: ignore[misc]
 def test_s4_output_locked(tmp_path: Path) -> None:
     clip1 = tmp_path / "c1.mkv"
-    subprocess.run(
-        [
-            "ffmpeg",
-            "-hide_banner",
-            "-loglevel",
-            "error",
-            "-f",
-            "lavfi",
-            "-i",
-            "testsrc=duration=1:size=16x16:rate=1",
-            "-g",
-            "1",
-            "-pix_fmt",
-            "yuv420p",
-            str(clip1),
-        ],
-        check=True,
-    )
+    make_clip(clip1)
     list_file = tmp_path / "list.txt"
     list_file.write_text(f"file '{clip1}'\n")
     log = tmp_path / "log.txt"
@@ -225,6 +207,7 @@ def test_s4_output_locked(tmp_path: Path) -> None:
     assert proc.returncode == 3
 
 
+@pytest.mark.skipif(os.environ.get("IMAGE") is None, reason="IMAGE not available")  # type: ignore[misc]
 def test_s5_interrupted(tmp_path: Path) -> None:
     env = os.environ.copy()
     env["PYTHONPATH"] = str(Path(__file__).resolve().parents[3])
@@ -235,24 +218,7 @@ def test_s5_interrupted(tmp_path: Path) -> None:
     wrapper.chmod(0o755)
     env["PATH"] = f"{hold}:{env['PATH']}"
     clip1 = tmp_path / "c1.mkv"
-    subprocess.run(
-        [
-            "ffmpeg",
-            "-hide_banner",
-            "-loglevel",
-            "error",
-            "-f",
-            "lavfi",
-            "-i",
-            "testsrc=duration=1:size=16x16:rate=1",
-            "-g",
-            "1",
-            "-pix_fmt",
-            "yuv420p",
-            str(clip1),
-        ],
-        check=True,
-    )
+    make_clip(clip1)
     list_file = tmp_path / "list.txt"
     list_file.write_text(f"file '{clip1}'\n")
     log = tmp_path / "log.txt"
@@ -282,26 +248,10 @@ def test_s5_interrupted(tmp_path: Path) -> None:
     assert not out_vid.exists()
 
 
+@pytest.mark.skipif(os.environ.get("IMAGE") is None, reason="IMAGE not available")  # type: ignore[misc]
 def test_s6_large_montage(tmp_path: Path) -> None:
     clip1 = tmp_path / "c1.mkv"
-    subprocess.run(
-        [
-            "ffmpeg",
-            "-hide_banner",
-            "-loglevel",
-            "error",
-            "-f",
-            "lavfi",
-            "-i",
-            "testsrc=duration=1:size=16x16:rate=1",
-            "-g",
-            "1",
-            "-pix_fmt",
-            "yuv420p",
-            str(clip1),
-        ],
-        check=True,
-    )
+    make_clip(clip1)
     list_file = tmp_path / "list.txt"
     list_file.write_text(f"file '{clip1}'\n")
     log = tmp_path / "log.txt"
