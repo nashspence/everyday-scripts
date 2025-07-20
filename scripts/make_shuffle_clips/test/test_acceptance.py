@@ -93,7 +93,7 @@ def test_container_custom_lengths() -> None:
             "-f",
             "lavfi",
             "-i",
-            "testsrc=duration=60:size=16x16:rate=1",
+            "testsrc=duration=60:size=16x16:rate=30",
             "-g",
             "1",
             "-pix_fmt",

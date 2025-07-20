@@ -13,11 +13,33 @@ from shared import compose
 def run_script(
     tmp_path: Path, *args: str, env_extra: dict[str, str] | None = None
 ) -> subprocess.CompletedProcess[str]:
-    script = Path(__file__).resolve().parents[1] / "concat_shuffle.py"
+    """Invoke the script either directly or inside the release container."""
+    root = Path(__file__).resolve().parents[3]
+    script = root / "scripts" / "concat_shuffle" / "concat_shuffle.py"
     env = os.environ.copy()
-    env["PYTHONPATH"] = str(Path(__file__).resolve().parents[3])
     if env_extra:
         env.update(env_extra)
+
+    image = os.environ.get("IMAGE")
+    if image:
+        cmd = [
+            "docker",
+            "run",
+            "--rm",
+            "-v",
+            f"{root}:/workspace:ro",
+            "-v",
+            f"{tmp_path}:{tmp_path}",
+            "-w",
+            "/workspace",
+            image,
+            "python3",
+            str(script.relative_to(root)),
+            *args,
+        ]
+        return subprocess.run(cmd, capture_output=True, text=True, env=env)
+
+    env["PYTHONPATH"] = str(root)
     return subprocess.run(
         [sys.executable, str(script), *args],
         capture_output=True,
