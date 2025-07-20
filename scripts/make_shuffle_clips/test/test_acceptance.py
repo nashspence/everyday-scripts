@@ -126,9 +126,17 @@ def test_container_custom_lengths() -> None:
             if not line.strip():
                 continue
             path = Path(line.split("'", 1)[1].rstrip("'"))
+            rel = path.relative_to("/output")
             out = subprocess.check_output(
                 [
+                    "docker",
+                    "run",
+                    "--rm",
+                    "--entrypoint",
                     "ffprobe",
+                    "-v",
+                    f"{workdir / 'output'}:/data:ro",
+                    os.environ["IMAGE"],
                     "-v",
                     "error",
                     "-select_streams",
@@ -137,7 +145,7 @@ def test_container_custom_lengths() -> None:
                     "format=duration",
                     "-of",
                     "default=nw=1:nk=1",
-                    str(path),
+                    f"/data/{rel}",
                 ],
                 text=True,
             )
