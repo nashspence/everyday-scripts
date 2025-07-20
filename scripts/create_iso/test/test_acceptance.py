@@ -19,7 +19,7 @@ def test_container_happy_path() -> None:
     build = workdir / "input" / "build"
     build.mkdir(parents=True, exist_ok=True)
     (build / "dummy.txt").write_text("hello")
-    now = datetime.datetime.utcnow()
+    now = datetime.datetime.now(datetime.UTC)
     try:
         proc = compose(
             compose_file,
@@ -57,7 +57,9 @@ def test_container_happy_path() -> None:
                 label = line.split(":", 1)[1].strip().strip("'\"")
                 break
         assert label
-        dt = datetime.datetime.strptime(label, "%Y%m%dT%H%M%SZ")
+        dt = datetime.datetime.strptime(label, "%Y%m%dT%H%M%SZ").replace(
+            tzinfo=datetime.UTC
+        )
         assert abs((dt - now).total_seconds()) < 30
     finally:
         for p in build.glob("*"):

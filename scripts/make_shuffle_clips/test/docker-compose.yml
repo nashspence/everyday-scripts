@@ -1,0 +1,10 @@
+services:
+  make_shuffle_clips:
+    image: ${IMAGE}
+    volumes:
+      - ./input:/input:ro
+      - ./output:/output
+    working_dir: /workspace
+    environment:
+      PYTHONPATH: /workspace
+    entrypoint: ["python3", "scripts/make_shuffle_clips/make_shuffle_clips.py"]
