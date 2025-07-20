@@ -1,0 +1,10 @@
+services:
+  create_iso:
+    image: ${IMAGE}
+    volumes:
+      - ./input:/input:ro
+      - ./output:/output
+    working_dir: /workspace
+    environment:
+      PYTHONPATH: /workspace
+    entrypoint: ["python3", "scripts/create_iso/create_iso.py"]
