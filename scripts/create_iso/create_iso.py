@@ -8,7 +8,6 @@ import datetime
 import re
 import shutil
 import subprocess
-import sys
 from pathlib import Path
 
 from utils import setup_logging
