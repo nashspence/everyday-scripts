@@ -19,7 +19,7 @@ def test_container_happy_path() -> None:
     build = workdir / "input" / "build"
     build.mkdir(parents=True, exist_ok=True)
     (build / "dummy.txt").write_text("hello")
-    now = datetime.datetime.utcnow()
+    now = datetime.datetime.now(datetime.UTC)
     try:
         proc = compose(
             compose_file,
