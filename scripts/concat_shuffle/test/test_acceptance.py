@@ -107,7 +107,7 @@ def test_container_happy_path() -> None:
             ],
             check=True,
         )
-    list_file.write_text(f"file '{clip1}'\nfile '{clip2}'\n")
+    list_file.write_text(f"file '/input/{clip1.name}'\nfile '/input/{clip2.name}'\n")
     try:
         proc = compose(
             compose_file,
