@@ -68,8 +68,8 @@ def test_container_happy_path() -> None:
         compose(compose_file, workdir, "down", "-v", check=False)
 
 
-def make_dummy_xorriso(dir: Path) -> None:
-    exe = dir / "xorriso"
+def make_dummy_genisoimage(dir: Path) -> None:
+    exe = dir / "genisoimage"
     exe.write_text(
         "#!/bin/sh\n"
         "iso=''\nprev=''\n"
@@ -105,7 +105,7 @@ def test_s3_label_too_long(tmp_path: Path) -> None:
     log = tmp_path / "log.txt"
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
-    make_dummy_xorriso(fake_bin)
+    make_dummy_genisoimage(fake_bin)
     proc = run_script(
         tmp_path,
         "--logfile",
@@ -129,7 +129,7 @@ def test_s4_label_bad_chars(tmp_path: Path) -> None:
     log = tmp_path / "log.txt"
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
-    make_dummy_xorriso(fake_bin)
+    make_dummy_genisoimage(fake_bin)
     proc = run_script(
         tmp_path,
         "--logfile",
@@ -150,7 +150,7 @@ def test_s5_nonexistent_build_dir(tmp_path: Path) -> None:
     log = tmp_path / "log.txt"
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
-    make_dummy_xorriso(fake_bin)
+    make_dummy_genisoimage(fake_bin)
     proc = run_script(
         tmp_path,
         "--logfile",
@@ -171,7 +171,7 @@ def test_s6_empty_build_dir(tmp_path: Path) -> None:
     log = tmp_path / "log.txt"
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
-    make_dummy_xorriso(fake_bin)
+    make_dummy_genisoimage(fake_bin)
     proc = run_script(
         tmp_path,
         "--logfile",
@@ -194,7 +194,7 @@ def test_s7_unwritable_iso_path(tmp_path: Path) -> None:
     log = tmp_path / "log.txt"
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
-    make_dummy_xorriso(fake_bin)
+    make_dummy_genisoimage(fake_bin)
     proc = run_script(
         tmp_path,
         "--logfile",
@@ -218,7 +218,7 @@ def test_s8_iso_exists_no_force(tmp_path: Path) -> None:
     log = tmp_path / "log.txt"
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
-    make_dummy_xorriso(fake_bin)
+    make_dummy_genisoimage(fake_bin)
     proc = run_script(
         tmp_path,
         "--logfile",
@@ -242,7 +242,7 @@ def test_s9_iso_exists_with_force(tmp_path: Path) -> None:
     log = tmp_path / "log.txt"
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
-    make_dummy_xorriso(fake_bin)
+    make_dummy_genisoimage(fake_bin)
     proc = run_script(
         tmp_path,
         "--logfile",
@@ -265,7 +265,7 @@ def test_s10_logfile_unwritable(tmp_path: Path) -> None:
     log = Path("/proc/create.log")
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
-    make_dummy_xorriso(fake_bin)
+    make_dummy_genisoimage(fake_bin)
     proc = run_script(
         tmp_path,
         "--logfile",

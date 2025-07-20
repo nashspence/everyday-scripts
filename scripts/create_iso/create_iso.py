@@ -17,12 +17,10 @@ LABEL_RE = re.compile(r"^[A-Za-z0-9_-]{1,32}$")
 
 def _build_command(*, build_dir: Path, iso_path: Path, label: str) -> list[str]:
     """Return the command used to create the ISO."""
-    if shutil.which("xorriso") is None:
-        raise FileNotFoundError("xorriso not found")
+    if shutil.which("genisoimage") is None:
+        raise FileNotFoundError("genisoimage not found")
     return [
-        "xorriso",
-        "-as",
-        "mkisofs",
+        "genisoimage",
         "-iso-level",
         "3",
         "-udf",
