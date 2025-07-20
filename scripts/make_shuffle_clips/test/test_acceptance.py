@@ -12,6 +12,45 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from shared import compose
 
 
+def make_dummy_ffmpeg(dir: Path) -> None:
+    exe = dir / "ffmpeg"
+    exe.write_text(
+        """#!/usr/bin/env python3
+import sys, pathlib, re
+args = sys.argv[1:]
+out = args[-1]
+length = 1.0
+for i, a in enumerate(args):
+    if a == '-t' and i + 1 < len(args):
+        length = float(args[i+1])
+    elif 'testsrc=duration=' in a:
+        m = re.search(r'duration=([0-9.]+)', a)
+        if m:
+            length = float(m.group(1))
+pathlib.Path(out).write_text(str(length))
+if '-c' in args:
+    idx = args.index('-c')
+    if idx + 1 < len(args) and args[idx+1] == 'copy':
+        print('copy')
+"""
+    )
+    exe.chmod(0o755)
+
+
+def make_dummy_ffprobe(dir: Path, dur: float | None = None) -> None:
+    exe = dir / "ffprobe"
+    if dur is None:
+        exe.write_text(
+            """#!/usr/bin/env python3
+import sys, pathlib
+print(pathlib.Path(sys.argv[-1]).read_text().strip())
+"""
+        )
+    else:
+        exe.write_text(f"#!/bin/sh\necho {dur}\n")
+    exe.chmod(0o755)
+
+
 def run_script(
     tmp_path: Path, *args: str, env_extra: dict[str, str] | None = None
 ) -> subprocess.CompletedProcess[str]:
@@ -122,6 +161,11 @@ def _ffprobe_dur(path: Path) -> float:
 
 
 def test_s1_happy_path(tmp_path: Path) -> None:
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    make_dummy_ffmpeg(fake_bin)
+    make_dummy_ffprobe(fake_bin)
+    env_path = f"{fake_bin}:{os.environ['PATH']}"
     src = tmp_path / "src.mp4"
     subprocess.run(
         [
@@ -140,6 +184,7 @@ def test_s1_happy_path(tmp_path: Path) -> None:
             str(src),
         ],
         check=True,
+        env={"PATH": env_path},
     )
     log = tmp_path / "shuffle.log"
     out_dir = tmp_path / "tmp"
@@ -151,6 +196,7 @@ def test_s1_happy_path(tmp_path: Path) -> None:
         "--tmp-dir",
         str(out_dir),
         str(src),
+        env_extra={"PATH": env_path},
     )
     assert proc.returncode == 0
     clip_list = out_dir / "clip_list.txt"
@@ -160,6 +206,11 @@ def test_s1_happy_path(tmp_path: Path) -> None:
 
 
 def test_s3_even_coverage(tmp_path: Path) -> None:
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    make_dummy_ffmpeg(fake_bin)
+    make_dummy_ffprobe(fake_bin)
+    env_path = f"{fake_bin}:{os.environ['PATH']}"
     src = tmp_path / "src.mp4"
     subprocess.run(
         [
@@ -178,6 +229,7 @@ def test_s3_even_coverage(tmp_path: Path) -> None:
             str(src),
         ],
         check=True,
+        env={"PATH": env_path},
     )
     log = tmp_path / "shuffle.log"
     out_dir = tmp_path / "tmp"
@@ -197,6 +249,7 @@ def test_s3_even_coverage(tmp_path: Path) -> None:
         "--seed",
         "123",
         str(src),
+        env_extra={"PATH": env_path},
     )
     assert proc.returncode == 0
     part = None
@@ -221,6 +274,11 @@ def test_s3_even_coverage(tmp_path: Path) -> None:
 
 
 def test_s4_keyframe_integrity(tmp_path: Path) -> None:
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    make_dummy_ffmpeg(fake_bin)
+    make_dummy_ffprobe(fake_bin)
+    env_path = f"{fake_bin}:{os.environ['PATH']}"
     src = tmp_path / "src.mp4"
     subprocess.run(
         [
@@ -239,6 +297,7 @@ def test_s4_keyframe_integrity(tmp_path: Path) -> None:
             str(src),
         ],
         check=True,
+        env={"PATH": env_path},
     )
     log = tmp_path / "shuffle.log"
     out_dir = tmp_path / "tmp"
@@ -258,6 +317,7 @@ def test_s4_keyframe_integrity(tmp_path: Path) -> None:
         "--seed",
         "4",
         str(src),
+        env_extra={"PATH": env_path},
     )
     assert proc.returncode == 0
     clip_list = out_dir / "clip_list.txt"
@@ -280,16 +340,11 @@ def test_s4_keyframe_integrity(tmp_path: Path) -> None:
         ],
         capture_output=True,
         text=True,
+        env={"PATH": env_path},
     )
     assert proc2.returncode == 0
     combined = proc2.stdout + proc2.stderr
     assert "copy" in combined
-
-
-def make_dummy_ffprobe(dir: Path, dur: float) -> None:
-    exe = dir / "ffprobe"
-    exe.write_text(f"#!/bin/sh\necho {dur}\n")
-    exe.chmod(0o755)
 
 
 def test_s5_invalid_numeric(tmp_path: Path) -> None:
