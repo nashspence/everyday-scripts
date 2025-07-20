@@ -77,6 +77,14 @@ def test_container_custom_lengths() -> None:
     tmp.mkdir(parents=True, exist_ok=True)
     subprocess.run(
         [
+            "docker",
+            "run",
+            "--rm",
+            "-v",
+            f"{workdir / 'input'}:/data",
+            "-w",
+            "/data",
+            os.environ["IMAGE"],
             "ffmpeg",
             "-hide_banner",
             "-loglevel",
@@ -85,7 +93,7 @@ def test_container_custom_lengths() -> None:
             "lavfi",
             "-i",
             "testsrc=duration=60:size=16x16:rate=1",
-            str(inp),
+            "src.mp4",
         ],
         check=True,
     )
