@@ -53,8 +53,8 @@ def test_container_happy_path() -> None:
         )
         label = ""
         for line in proc.stdout.decode().splitlines():
-            if "Volume id" in line:
-                label = line.split(":", 1)[1].strip()
+            if "volume id" in line.lower():
+                label = line.split(":", 1)[1].strip().strip("'\"")
                 break
         assert label
         dt = datetime.datetime.strptime(label, "%Y%m%dT%H%M%SZ")
