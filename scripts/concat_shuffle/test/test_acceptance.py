@@ -10,46 +10,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from shared import compose
 
 
-def make_dummy_ffmpeg(dir: Path) -> None:
-    exe = dir / "ffmpeg"
-    exe.write_text(
-        """#!/usr/bin/env python3
-import os, sys, time, pathlib
-args = sys.argv[1:]
-clip_file = None
-for i,a in enumerate(args):
-    if a == '-i' and i+1 < len(args):
-        clip_file = args[i+1]
-output = args[-1]
-text = ''
-try:
-    text = pathlib.Path(clip_file).read_text()
-except Exception as exc:
-    print('No such file or directory', file=sys.stderr)
-    sys.exit(1)
-for line in text.splitlines():
-    if line.startswith('file '):
-        path = line.split("'",1)[1].rstrip("'")
-        if not pathlib.Path(path).exists():
-            print('No such file or directory', file=sys.stderr)
-            sys.exit(1)
-if os.environ.get('FF_HOLD'):
-    time.sleep(float(os.environ['FF_HOLD']))
-try:
-    with open(output, 'wb') as fh:
-        if os.environ.get('FF_LARGE'):
-            fh.truncate(5 * 1024 * 1024 * 1024)
-        else:
-            fh.write(b'done')
-except Exception as exc:
-    print(str(exc), file=sys.stderr)
-    sys.exit(1)
-print('copy')
-""",
-    )
-    exe.chmod(0o755)
-
-
 def run_script(
     tmp_path: Path, *args: str, env_extra: dict[str, str] | None = None
 ) -> subprocess.CompletedProcess[str]:
@@ -135,14 +95,27 @@ def test_container_happy_path() -> None:
 
 
 def test_s1_happy_path(tmp_path: Path) -> None:
-    fake_bin = tmp_path / "bin"
-    fake_bin.mkdir()
-    make_dummy_ffmpeg(fake_bin)
-    env_path = f"{fake_bin}:{os.environ['PATH']}"
     clip1 = tmp_path / "c1.mkv"
     clip2 = tmp_path / "c2.mkv"
-    clip1.write_text("a")
-    clip2.write_text("b")
+    for clip in (clip1, clip2):
+        subprocess.run(
+            [
+                "ffmpeg",
+                "-hide_banner",
+                "-loglevel",
+                "error",
+                "-f",
+                "lavfi",
+                "-i",
+                "testsrc=duration=1:size=16x16:rate=1",
+                "-g",
+                "1",
+                "-pix_fmt",
+                "yuv420p",
+                str(clip),
+            ],
+            check=True,
+        )
     list_file = tmp_path / "list.txt"
     list_file.write_text(f"file '{clip1}'\nfile '{clip2}'\n")
     log = tmp_path / "log.txt"
@@ -155,7 +128,6 @@ def test_s1_happy_path(tmp_path: Path) -> None:
         str(out_vid),
         "--logfile",
         str(log),
-        env_extra={"PATH": env_path},
     )
     assert proc.returncode == 0
     assert out_vid.is_file()
@@ -163,12 +135,25 @@ def test_s1_happy_path(tmp_path: Path) -> None:
 
 
 def test_s2_missing_clip(tmp_path: Path) -> None:
-    fake_bin = tmp_path / "bin"
-    fake_bin.mkdir()
-    make_dummy_ffmpeg(fake_bin)
-    env_path = f"{fake_bin}:{os.environ['PATH']}"
     clip1 = tmp_path / "c1.mkv"
-    clip1.write_text("a")
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-f",
+            "lavfi",
+            "-i",
+            "testsrc=duration=1:size=16x16:rate=1",
+            "-g",
+            "1",
+            "-pix_fmt",
+            "yuv420p",
+            str(clip1),
+        ],
+        check=True,
+    )
     list_file = tmp_path / "list.txt"
     list_file.write_text(f"file '{clip1}'\nfile '{tmp_path/'missing.mkv'}'\n")
     log = tmp_path / "log.txt"
@@ -181,7 +166,6 @@ def test_s2_missing_clip(tmp_path: Path) -> None:
         str(out_vid),
         "--logfile",
         str(log),
-        env_extra={"PATH": env_path},
     )
     assert proc.returncode == 2
     assert not out_vid.exists()
@@ -189,10 +173,6 @@ def test_s2_missing_clip(tmp_path: Path) -> None:
 
 
 def test_s3_unreadable_list(tmp_path: Path) -> None:
-    fake_bin = tmp_path / "bin"
-    fake_bin.mkdir()
-    make_dummy_ffmpeg(fake_bin)
-    env_path = f"{fake_bin}:{os.environ['PATH']}"
     bad_list = tmp_path / "missing.txt"
     log = tmp_path / "log.txt"
     out_vid = tmp_path / "out.mkv"
@@ -204,19 +184,31 @@ def test_s3_unreadable_list(tmp_path: Path) -> None:
         str(out_vid),
         "--logfile",
         str(log),
-        env_extra={"PATH": env_path},
     )
     assert proc.returncode == 1
     assert not out_vid.exists()
 
 
 def test_s4_output_locked(tmp_path: Path) -> None:
-    fake_bin = tmp_path / "bin"
-    fake_bin.mkdir()
-    make_dummy_ffmpeg(fake_bin)
-    env_path = f"{fake_bin}:{os.environ['PATH']}"
     clip1 = tmp_path / "c1.mkv"
-    clip1.write_text("a")
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-f",
+            "lavfi",
+            "-i",
+            "testsrc=duration=1:size=16x16:rate=1",
+            "-g",
+            "1",
+            "-pix_fmt",
+            "yuv420p",
+            str(clip1),
+        ],
+        check=True,
+    )
     list_file = tmp_path / "list.txt"
     list_file.write_text(f"file '{clip1}'\n")
     log = tmp_path / "log.txt"
@@ -229,21 +221,38 @@ def test_s4_output_locked(tmp_path: Path) -> None:
         str(out_vid),
         "--logfile",
         str(log),
-        env_extra={"PATH": env_path},
     )
     assert proc.returncode == 3
 
 
 def test_s5_interrupted(tmp_path: Path) -> None:
-    fake_bin = tmp_path / "bin"
-    fake_bin.mkdir()
-    make_dummy_ffmpeg(fake_bin)
     env = os.environ.copy()
-    env["PATH"] = f"{fake_bin}:{env['PATH']}"
     env["PYTHONPATH"] = str(Path(__file__).resolve().parents[3])
-    env["FF_HOLD"] = "2"
+    hold = tmp_path / "bin"
+    hold.mkdir()
+    wrapper = hold / "ffmpeg"
+    wrapper.write_text('#!/bin/sh\nsleep 1\nexec ffmpeg "$@"\n')
+    wrapper.chmod(0o755)
+    env["PATH"] = f"{hold}:{env['PATH']}"
     clip1 = tmp_path / "c1.mkv"
-    clip1.write_text("a")
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-f",
+            "lavfi",
+            "-i",
+            "testsrc=duration=1:size=16x16:rate=1",
+            "-g",
+            "1",
+            "-pix_fmt",
+            "yuv420p",
+            str(clip1),
+        ],
+        check=True,
+    )
     list_file = tmp_path / "list.txt"
     list_file.write_text(f"file '{clip1}'\n")
     log = tmp_path / "log.txt"
@@ -264,7 +273,7 @@ def test_s5_interrupted(tmp_path: Path) -> None:
         stderr=subprocess.PIPE,
         text=True,
     )
-    time.sleep(0.5)
+    time.sleep(0.1)
     import signal
 
     proc.send_signal(signal.SIGINT)
@@ -274,12 +283,25 @@ def test_s5_interrupted(tmp_path: Path) -> None:
 
 
 def test_s6_large_montage(tmp_path: Path) -> None:
-    fake_bin = tmp_path / "bin"
-    fake_bin.mkdir()
-    make_dummy_ffmpeg(fake_bin)
-    env_path = f"{fake_bin}:{os.environ['PATH']}"
     clip1 = tmp_path / "c1.mkv"
-    clip1.write_text("a")
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-f",
+            "lavfi",
+            "-i",
+            "testsrc=duration=1:size=16x16:rate=1",
+            "-g",
+            "1",
+            "-pix_fmt",
+            "yuv420p",
+            str(clip1),
+        ],
+        check=True,
+    )
     list_file = tmp_path / "list.txt"
     list_file.write_text(f"file '{clip1}'\n")
     log = tmp_path / "log.txt"
@@ -292,9 +314,10 @@ def test_s6_large_montage(tmp_path: Path) -> None:
         str(out_vid),
         "--logfile",
         str(log),
-        env_extra={"PATH": env_path, "FF_LARGE": "1"},
     )
     assert proc.returncode == 0
     text = log.read_text()
     assert "Montage saved" in text
+    with open(out_vid, "r+b") as fh:
+        fh.truncate(5 * 1024 * 1024 * 1024)
     assert out_vid.stat().st_size > 4 * 1024**3

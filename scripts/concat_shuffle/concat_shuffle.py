@@ -5,10 +5,12 @@ Usage:
   concat_shuffle.py --clip-list PATH --out-file OUTPUT [--logfile LOG]
 """
 from __future__ import annotations
+
 import argparse
-import subprocess
 import shlex
+import subprocess
 from pathlib import Path
+
 from utils import setup_logging
 
 
@@ -54,7 +56,7 @@ def main() -> None:
         Path(ns.out_file).unlink(missing_ok=True)
         raise SystemExit(3)
 
-    if proc.returncode != 0:
+    if proc.returncode != 0 or "No such file or directory" in proc.stderr:
         logger.error(proc.stderr.strip())
         if (
             "No such file or directory" in proc.stderr
