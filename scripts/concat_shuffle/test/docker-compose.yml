@@ -1,0 +1,10 @@
+services:
+  concat_shuffle:
+    image: ${IMAGE}
+    volumes:
+      - ./input:/input:ro
+      - ./output:/output
+    working_dir: /workspace
+    environment:
+      PYTHONPATH: /workspace
+    entrypoint: ["python3", "scripts/concat_shuffle/concat_shuffle.py"]
