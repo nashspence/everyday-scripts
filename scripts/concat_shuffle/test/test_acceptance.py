@@ -32,8 +32,9 @@ def run_script(
             f"{tmp_path}:{tmp_path}",
             "-w",
             "/workspace",
-            image,
+            "--entrypoint",
             "python3",
+            image,
             str(script.relative_to(root)),
             *args,
         ]
