@@ -295,4 +295,6 @@ def test_s6_large_montage(tmp_path: Path) -> None:
         env_extra={"PATH": env_path, "FF_LARGE": "1"},
     )
     assert proc.returncode == 0
+    text = log.read_text()
+    assert "Montage saved" in text
     assert out_vid.stat().st_size > 4 * 1024**3
