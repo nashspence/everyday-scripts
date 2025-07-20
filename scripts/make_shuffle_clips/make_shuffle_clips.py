@@ -101,7 +101,7 @@ def main() -> None:
         if not f.is_file():
             logger.error(f"File not found: {f}")
             raise SystemExit(1)
-    
+
     # ------------------------------------------------------------------ 1 ‑ durations & prefix sums
     durations, prefix = [], [0.0]
     logger.info(f"{len(files)} source file(s) selected")

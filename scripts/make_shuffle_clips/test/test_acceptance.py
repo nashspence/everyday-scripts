@@ -12,7 +12,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from shared import compose
 
 
-def run_script(tmp_path: Path, *args: str, env_extra: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
+def run_script(
+    tmp_path: Path, *args: str, env_extra: dict[str, str] | None = None
+) -> subprocess.CompletedProcess[str]:
     script = Path(__file__).resolve().parents[1] / "make_shuffle_clips.py"
     env = os.environ.copy()
     env["PYTHONPATH"] = str(Path(__file__).resolve().parents[3])
