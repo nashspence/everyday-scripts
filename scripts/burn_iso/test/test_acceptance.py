@@ -99,6 +99,9 @@ def test_s8_logfile_permission_denied(tmp_path: Path) -> None:
     restricted.mkdir()
     os.chmod(restricted, 0o500)
     log = restricted / "burn.log"
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    (fake_bin / "python3").symlink_to("/usr/bin/python3")
     proc = run_script(
         "burn_iso",
         tmp_path,
@@ -107,6 +110,7 @@ def test_s8_logfile_permission_denied(tmp_path: Path) -> None:
         "--logfile",
         str(log),
         "--dry-run",
+        env_extra={"PATH": str(fake_bin)},
     )
     assert proc.returncode != 0
     assert "Permission" in proc.stderr or "FileNotFoundError" in proc.stderr
