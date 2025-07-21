@@ -99,13 +99,10 @@ def run_script(
 
     image = os.environ.get("IMAGE")
     if image:
-        # ensure Docker user can access tmp_path contents
+        # ensure Docker user can access the temporary directory itself
+        # without altering permissions of test-created files or
+        # intentionally restricted paths
         tmp_path.chmod(0o777)
-        for p in tmp_path.rglob("*"):
-            try:
-                p.chmod(0o777 if p.is_dir() else 0o666)
-            except PermissionError:
-                pass
 
         cmd = [
             "docker",
