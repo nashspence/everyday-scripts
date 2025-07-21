@@ -110,7 +110,7 @@ def test_s8_logfile_permission_denied(tmp_path: Path) -> None:
         "--logfile",
         str(log),
         "--dry-run",
-        env_extra={"PATH": str(fake_bin)},
+        env_extra={"PATH": f"{fake_bin}:{os.environ['PATH']}"},
     )
     assert proc.returncode != 0
     assert "Permission" in proc.stderr or "FileNotFoundError" in proc.stderr
