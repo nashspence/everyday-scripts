@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from shared.acceptance import run_script
+from shared.acceptance_test import run_script
 
 from shared import compose  # noqa: E402
 
@@ -211,6 +211,7 @@ def test_s8_iso_exists_no_force(tmp_path: Path) -> None:
     iso = tmp_path / "out.iso"
     iso.write_text("existing")
     iso.chmod(0o666)
+    iso.chmod(0o666)
     log = tmp_path / "log.txt"
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
@@ -237,6 +238,7 @@ def test_s9_iso_exists_with_force(tmp_path: Path) -> None:
     (build / "f.txt").write_text("x")
     iso = tmp_path / "out.iso"
     iso.write_text("existing")
+    iso.chmod(0o666)
     log = tmp_path / "log.txt"
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()

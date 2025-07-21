@@ -8,6 +8,6 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from shared.acceptance import add_repo_to_path  # noqa: E402
+from shared.acceptance_test import add_repo_to_path  # noqa: E402
 
 add_repo_to_path()

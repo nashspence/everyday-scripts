@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from shared.acceptance import run_script
+from shared.acceptance_test import run_script
 
 from shared import compose  # noqa: E402
 
@@ -51,6 +51,80 @@ print(pathlib.Path(sys.argv[-1]).read_text().strip())
     exe.chmod(0o755)
 
 
+def make_video(path: Path, duration: float) -> None:
+    """Create a test video using ffmpeg locally or in IMAGE."""
+    cmd = [
+        "ffmpeg",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-f",
+        "lavfi",
+        "-i",
+        f"testsrc=duration={duration}:size=16x16:rate=30",
+        "-g",
+        "1",
+        "-pix_fmt",
+        "yuv420p",
+        str(path),
+    ]
+    image = os.environ.get("IMAGE")
+    if image:
+        subprocess.run(
+            [
+                "docker",
+                "run",
+                "--rm",
+                "--entrypoint",
+                "ffmpeg",
+                "-v",
+                f"{path.parent}:{path.parent}",
+                "-w",
+                str(path.parent),
+                image,
+                *cmd[1:],
+            ],
+            check=True,
+        )
+    else:
+        subprocess.run(cmd, check=True)
+
+
+def probe_duration(path: Path) -> float:
+    """Return video duration using ffprobe locally or in IMAGE."""
+    cmd = [
+        "ffprobe",
+        "-v",
+        "error",
+        "-select_streams",
+        "v:0",
+        "-show_entries",
+        "format=duration",
+        "-of",
+        "default=nw=1:nk=1",
+        str(path),
+    ]
+    image = os.environ.get("IMAGE")
+    if image:
+        out = subprocess.check_output(
+            [
+                "docker",
+                "run",
+                "--rm",
+                "--entrypoint",
+                "ffprobe",
+                "-v",
+                f"{path.parent}:{path.parent}:ro",
+                image,
+                *cmd[1:],
+            ],
+            text=True,
+        )
+    else:
+        out = subprocess.check_output(cmd, text=True)
+    return float(out.strip())
+
+
 @pytest.mark.skipif(os.environ.get("IMAGE") is None, reason="IMAGE not available")  # type: ignore[misc]
 def test_container_custom_lengths() -> None:
     workdir = Path(__file__).parent
@@ -59,33 +133,7 @@ def test_container_custom_lengths() -> None:
     log = workdir / "output" / "shuffle.log"
     tmp = workdir / "output" / "tmp"
     tmp.mkdir(parents=True, exist_ok=True)
-    subprocess.run(
-        [
-            "docker",
-            "run",
-            "--rm",
-            "--entrypoint",
-            "ffmpeg",
-            "-v",
-            f"{workdir / 'input'}:/data",
-            "-w",
-            "/data",
-            os.environ["IMAGE"],
-            "-hide_banner",
-            "-loglevel",
-            "error",
-            "-f",
-            "lavfi",
-            "-i",
-            "testsrc=duration=60:size=16x16:rate=30",
-            "-g",
-            "1",
-            "-pix_fmt",
-            "yuv420p",
-            "src.mp4",
-        ],
-        check=True,
-    )
+    make_video(inp, 60)
     try:
         proc = compose(
             compose_file,
@@ -114,55 +162,13 @@ def test_container_custom_lengths() -> None:
             if not line.strip():
                 continue
             path = Path(line.split("'", 1)[1].rstrip("'"))
-            rel = path.relative_to("/output")
-            out = subprocess.check_output(
-                [
-                    "docker",
-                    "run",
-                    "--rm",
-                    "--entrypoint",
-                    "ffprobe",
-                    "-v",
-                    f"{workdir / 'output'}:/data:ro",
-                    os.environ["IMAGE"],
-                    "-v",
-                    "error",
-                    "-select_streams",
-                    "v:0",
-                    "-show_entries",
-                    "format=duration",
-                    "-of",
-                    "default=nw=1:nk=1",
-                    f"/data/{rel}",
-                ],
-                text=True,
-            )
-            total += float(out.strip())
+            total += probe_duration(path)
         assert abs(total - 5) < 0.1
     finally:
         inp.unlink(missing_ok=True)
         shutil.rmtree(tmp, ignore_errors=True)
         log.unlink(missing_ok=True)
         compose(compose_file, workdir, "down", "-v", check=False)
-
-
-def _ffprobe_dur(path: Path) -> float:
-    out = subprocess.check_output(
-        [
-            "ffprobe",
-            "-v",
-            "error",
-            "-select_streams",
-            "v:0",
-            "-show_entries",
-            "format=duration",
-            "-of",
-            "default=nw=1:nk=1",
-            str(path),
-        ],
-        text=True,
-    )
-    return float(out.strip())
 
 
 def test_s1_happy_path(tmp_path: Path) -> None:
@@ -172,25 +178,7 @@ def test_s1_happy_path(tmp_path: Path) -> None:
     make_dummy_ffprobe(fake_bin)
     env_path = f"{fake_bin}:{os.environ['PATH']}"
     src = tmp_path / "src.mp4"
-    subprocess.run(
-        [
-            "ffmpeg",
-            "-hide_banner",
-            "-loglevel",
-            "error",
-            "-f",
-            "lavfi",
-            "-i",
-            "testsrc=duration=1000:size=16x16:rate=30",
-            "-g",
-            "1",
-            "-pix_fmt",
-            "yuv420p",
-            str(src),
-        ],
-        check=True,
-        env={"PATH": env_path},
-    )
+    make_video(src, 1000)
     log = tmp_path / "shuffle.log"
     out_dir = tmp_path / "tmp"
     out_dir.mkdir()
@@ -219,25 +207,7 @@ def test_s3_even_coverage(tmp_path: Path) -> None:
     make_dummy_ffprobe(fake_bin)
     env_path = f"{fake_bin}:{os.environ['PATH']}"
     src = tmp_path / "src.mp4"
-    subprocess.run(
-        [
-            "ffmpeg",
-            "-hide_banner",
-            "-loglevel",
-            "error",
-            "-f",
-            "lavfi",
-            "-i",
-            "testsrc=duration=60:size=16x16:rate=30",
-            "-g",
-            "1",
-            "-pix_fmt",
-            "yuv420p",
-            str(src),
-        ],
-        check=True,
-        env={"PATH": env_path},
-    )
+    make_video(src, 60)
     log = tmp_path / "shuffle.log"
     out_dir = tmp_path / "tmp"
     out_dir.mkdir()
@@ -289,25 +259,7 @@ def test_s4_keyframe_integrity(tmp_path: Path) -> None:
     make_dummy_ffprobe(fake_bin)
     env_path = f"{fake_bin}:{os.environ['PATH']}"
     src = tmp_path / "src.mp4"
-    subprocess.run(
-        [
-            "ffmpeg",
-            "-hide_banner",
-            "-loglevel",
-            "error",
-            "-f",
-            "lavfi",
-            "-i",
-            "testsrc=duration=60:size=16x16:rate=30",
-            "-g",
-            "1",
-            "-pix_fmt",
-            "yuv420p",
-            str(src),
-        ],
-        check=True,
-        env={"PATH": env_path},
-    )
+    make_video(src, 60)
     log = tmp_path / "shuffle.log"
     out_dir = tmp_path / "tmp"
     out_dir.mkdir()

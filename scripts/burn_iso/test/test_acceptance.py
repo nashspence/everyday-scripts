@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from shared.acceptance import run_script
+from shared.acceptance_test import run_script
 
 from shared import compose  # noqa: E402
 from scripts.burn_iso.burn_iso import _build_command  # noqa: E402

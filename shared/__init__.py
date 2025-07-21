@@ -1,4 +1,4 @@
-from .acceptance import (
+from .acceptance_test import (
     compose,
     dump_logs,
     wait_for,
