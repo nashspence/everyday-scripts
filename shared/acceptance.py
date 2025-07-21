@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-import shutil
 import subprocess
 import sys
 import time
@@ -99,7 +98,7 @@ def run_script(
         script_file = script
 
     image = os.environ.get("IMAGE")
-    if image and shutil.which("docker"):
+    if image:
         cmd = [
             "docker",
             "run",
