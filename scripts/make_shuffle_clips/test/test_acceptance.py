@@ -194,6 +194,7 @@ def test_s1_happy_path(tmp_path: Path) -> None:
     log = tmp_path / "shuffle.log"
     out_dir = tmp_path / "tmp"
     out_dir.mkdir()
+    out_dir.chmod(0o777)
     proc = run_script(
         "make_shuffle_clips",
         tmp_path,
@@ -240,6 +241,7 @@ def test_s3_even_coverage(tmp_path: Path) -> None:
     log = tmp_path / "shuffle.log"
     out_dir = tmp_path / "tmp"
     out_dir.mkdir()
+    out_dir.chmod(0o777)
     proc = run_script(
         "make_shuffle_clips",
         tmp_path,
@@ -309,6 +311,7 @@ def test_s4_keyframe_integrity(tmp_path: Path) -> None:
     log = tmp_path / "shuffle.log"
     out_dir = tmp_path / "tmp"
     out_dir.mkdir()
+    out_dir.chmod(0o777)
     proc = run_script(
         "make_shuffle_clips",
         tmp_path,

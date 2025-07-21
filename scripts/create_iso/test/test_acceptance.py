@@ -86,6 +86,7 @@ def make_dummy_genisoimage(dir: Path) -> None:
 def test_s3_label_too_long(tmp_path: Path) -> None:
     build = tmp_path / "build"
     build.mkdir()
+    build.chmod(0o777)
     (build / "f.txt").write_text("x")
     log = tmp_path / "log.txt"
     fake_bin = tmp_path / "bin"
@@ -111,6 +112,7 @@ def test_s3_label_too_long(tmp_path: Path) -> None:
 def test_s4_label_bad_chars(tmp_path: Path) -> None:
     build = tmp_path / "build"
     build.mkdir()
+    build.chmod(0o777)
     (build / "f.txt").write_text("x")
     log = tmp_path / "log.txt"
     fake_bin = tmp_path / "bin"
@@ -156,6 +158,7 @@ def test_s5_nonexistent_build_dir(tmp_path: Path) -> None:
 def test_s6_empty_build_dir(tmp_path: Path) -> None:
     build = tmp_path / "build"
     build.mkdir()
+    build.chmod(0o777)
     log = tmp_path / "log.txt"
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
@@ -178,6 +181,7 @@ def test_s6_empty_build_dir(tmp_path: Path) -> None:
 def test_s7_unwritable_iso_path(tmp_path: Path) -> None:
     build = tmp_path / "build"
     build.mkdir()
+    build.chmod(0o777)
     (build / "f.txt").write_text("x")
     iso = Path("/proc/out.iso")
     log = tmp_path / "log.txt"
@@ -202,6 +206,7 @@ def test_s7_unwritable_iso_path(tmp_path: Path) -> None:
 def test_s8_iso_exists_no_force(tmp_path: Path) -> None:
     build = tmp_path / "build"
     build.mkdir()
+    build.chmod(0o777)
     (build / "f.txt").write_text("x")
     iso = tmp_path / "out.iso"
     iso.write_text("existing")
@@ -227,6 +232,7 @@ def test_s8_iso_exists_no_force(tmp_path: Path) -> None:
 def test_s9_iso_exists_with_force(tmp_path: Path) -> None:
     build = tmp_path / "build"
     build.mkdir()
+    build.chmod(0o777)
     (build / "f.txt").write_text("x")
     iso = tmp_path / "out.iso"
     iso.write_text("existing")
@@ -253,6 +259,7 @@ def test_s9_iso_exists_with_force(tmp_path: Path) -> None:
 def test_s10_logfile_unwritable(tmp_path: Path) -> None:
     build = tmp_path / "build"
     build.mkdir()
+    build.chmod(0o777)
     (build / "f.txt").write_text("x")
     log = Path("/proc/create.log")
     fake_bin = tmp_path / "bin"
