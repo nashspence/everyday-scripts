@@ -3,15 +3,14 @@ from __future__ import annotations
 import json
 import math
 import os
-import subprocess
-import sys
 import wave
 from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
-from shared import compose
+from shared.acceptance_test import run_script
+
+from shared import compose  # noqa: E402
 
 
 def make_wav(path: Path) -> None:
@@ -101,7 +100,6 @@ def test_s2_missing_input() -> None:
 
 
 def test_s3_unwritable_out_json(tmp_path: Path) -> None:
-    script = Path(__file__).resolve().parents[1] / "analyse_loudness.py"
     fake_ffmpeg = tmp_path / "ffmpeg"
     metrics = Path("/proc/metrics.json")
     fake_ffmpeg.write_text(
@@ -109,23 +107,17 @@ def test_s3_unwritable_out_json(tmp_path: Path) -> None:
     )
     fake_ffmpeg.chmod(0o755)
     log = tmp_path / "log.txt"
-    env = os.environ.copy()
-    env["PATH"] = f"{tmp_path}:{env['PATH']}"
-    env["PYTHONPATH"] = str(Path(__file__).resolve().parents[3])
-    proc = subprocess.run(
-        [
-            sys.executable,
-            str(script),
-            "--logfile",
-            str(log),
-            "--in-file",
-            "dummy.wav",
-            "--out-json",
-            str(metrics),
-        ],
-        capture_output=True,
-        text=True,
-        env=env,
+    env = {"PATH": f"{tmp_path}:{os.environ['PATH']}"}
+    proc = run_script(
+        "analyse_loudness",
+        tmp_path,
+        "--logfile",
+        str(log),
+        "--in-file",
+        "dummy.wav",
+        "--out-json",
+        str(metrics),
+        env_extra=env,
         check=False,
     )
     assert proc.returncode != 0

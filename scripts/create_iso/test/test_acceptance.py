@@ -2,14 +2,13 @@ from __future__ import annotations
 
 import datetime
 import os
-import subprocess
-import sys
 from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
-from shared import compose
+from shared.acceptance_test import run_script
+
+from shared import compose  # noqa: E402
 
 
 @pytest.mark.skipif(os.environ.get("IMAGE") is None, reason="IMAGE not available")  # type: ignore[misc]
@@ -84,31 +83,17 @@ def make_dummy_genisoimage(dir: Path) -> None:
     exe.chmod(0o755)
 
 
-def run_script(
-    tmp_path: Path, *args: str, env_extra: dict[str, str] | None = None
-) -> subprocess.CompletedProcess[str]:
-    script = Path(__file__).resolve().parents[1] / "create_iso.py"
-    env = os.environ.copy()
-    env["PYTHONPATH"] = str(Path(__file__).resolve().parents[3])
-    if env_extra:
-        env.update(env_extra)
-    return subprocess.run(
-        [sys.executable, str(script), *args],
-        capture_output=True,
-        text=True,
-        env=env,
-    )
-
-
 def test_s3_label_too_long(tmp_path: Path) -> None:
     build = tmp_path / "build"
     build.mkdir()
+    build.chmod(0o777)
     (build / "f.txt").write_text("x")
     log = tmp_path / "log.txt"
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
     make_dummy_genisoimage(fake_bin)
     proc = run_script(
+        "create_iso",
         tmp_path,
         "--logfile",
         str(log),
@@ -127,12 +112,14 @@ def test_s3_label_too_long(tmp_path: Path) -> None:
 def test_s4_label_bad_chars(tmp_path: Path) -> None:
     build = tmp_path / "build"
     build.mkdir()
+    build.chmod(0o777)
     (build / "f.txt").write_text("x")
     log = tmp_path / "log.txt"
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
     make_dummy_genisoimage(fake_bin)
     proc = run_script(
+        "create_iso",
         tmp_path,
         "--logfile",
         str(log),
@@ -154,6 +141,7 @@ def test_s5_nonexistent_build_dir(tmp_path: Path) -> None:
     fake_bin.mkdir()
     make_dummy_genisoimage(fake_bin)
     proc = run_script(
+        "create_iso",
         tmp_path,
         "--logfile",
         str(log),
@@ -170,11 +158,13 @@ def test_s5_nonexistent_build_dir(tmp_path: Path) -> None:
 def test_s6_empty_build_dir(tmp_path: Path) -> None:
     build = tmp_path / "build"
     build.mkdir()
+    build.chmod(0o777)
     log = tmp_path / "log.txt"
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
     make_dummy_genisoimage(fake_bin)
     proc = run_script(
+        "create_iso",
         tmp_path,
         "--logfile",
         str(log),
@@ -191,6 +181,7 @@ def test_s6_empty_build_dir(tmp_path: Path) -> None:
 def test_s7_unwritable_iso_path(tmp_path: Path) -> None:
     build = tmp_path / "build"
     build.mkdir()
+    build.chmod(0o777)
     (build / "f.txt").write_text("x")
     iso = Path("/proc/out.iso")
     log = tmp_path / "log.txt"
@@ -198,6 +189,7 @@ def test_s7_unwritable_iso_path(tmp_path: Path) -> None:
     fake_bin.mkdir()
     make_dummy_genisoimage(fake_bin)
     proc = run_script(
+        "create_iso",
         tmp_path,
         "--logfile",
         str(log),
@@ -214,14 +206,18 @@ def test_s7_unwritable_iso_path(tmp_path: Path) -> None:
 def test_s8_iso_exists_no_force(tmp_path: Path) -> None:
     build = tmp_path / "build"
     build.mkdir()
+    build.chmod(0o777)
     (build / "f.txt").write_text("x")
     iso = tmp_path / "out.iso"
     iso.write_text("existing")
+    iso.chmod(0o666)
+    iso.chmod(0o666)
     log = tmp_path / "log.txt"
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
     make_dummy_genisoimage(fake_bin)
     proc = run_script(
+        "create_iso",
         tmp_path,
         "--logfile",
         str(log),
@@ -238,14 +234,17 @@ def test_s8_iso_exists_no_force(tmp_path: Path) -> None:
 def test_s9_iso_exists_with_force(tmp_path: Path) -> None:
     build = tmp_path / "build"
     build.mkdir()
+    build.chmod(0o777)
     (build / "f.txt").write_text("x")
     iso = tmp_path / "out.iso"
     iso.write_text("existing")
+    iso.chmod(0o666)
     log = tmp_path / "log.txt"
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
     make_dummy_genisoimage(fake_bin)
     proc = run_script(
+        "create_iso",
         tmp_path,
         "--logfile",
         str(log),
@@ -263,12 +262,14 @@ def test_s9_iso_exists_with_force(tmp_path: Path) -> None:
 def test_s10_logfile_unwritable(tmp_path: Path) -> None:
     build = tmp_path / "build"
     build.mkdir()
+    build.chmod(0o777)
     (build / "f.txt").write_text("x")
     log = Path("/proc/create.log")
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
     make_dummy_genisoimage(fake_bin)
     proc = run_script(
+        "create_iso",
         tmp_path,
         "--logfile",
         str(log),

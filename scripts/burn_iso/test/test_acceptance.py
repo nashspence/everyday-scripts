@@ -1,17 +1,14 @@
 from __future__ import annotations
 
 import os
-import subprocess
-import sys
 from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
-
-from shared import compose
 
 import pytest
 
-from scripts.burn_iso.burn_iso import _build_command
+from shared.acceptance_test import run_script
+
+from shared import compose  # noqa: E402
+from scripts.burn_iso.burn_iso import _build_command  # noqa: E402
 
 
 @pytest.mark.skipif(
@@ -46,7 +43,6 @@ def test_container_dry_run() -> None:
 
 
 def test_s10_dry_run(tmp_path: Path) -> None:
-    script = Path(__file__).resolve().parents[1] / "burn_iso.py"
     iso = tmp_path / "dummy.iso"
     iso.write_bytes(b"iso")
     log = tmp_path / "burn.log"
@@ -55,27 +51,20 @@ def test_s10_dry_run(tmp_path: Path) -> None:
     dummy = fake_bin / "growisofs"
     dummy.write_text("#!/bin/sh\nexit 0")
     dummy.chmod(0o755)
-    env = os.environ.copy()
-    env["PATH"] = f"{fake_bin}:{env['PATH']}"
-    env["PYTHONPATH"] = str(Path(__file__).resolve().parents[3])
-    proc = subprocess.run(
-        [
-            sys.executable,
-            str(script),
-            "--iso-path",
-            str(iso),
-            "--dry-run",
-            "--speed",
-            "4",
-            "--device",
-            "/dev/sr0",
-            "--logfile",
-            str(log),
-            "--skip-verify",
-        ],
-        capture_output=True,
-        text=True,
-        env=env,
+    proc = run_script(
+        "burn_iso",
+        tmp_path,
+        "--iso-path",
+        str(iso),
+        "--dry-run",
+        "--speed",
+        "4",
+        "--device",
+        "/dev/sr0",
+        "--logfile",
+        str(log),
+        "--skip-verify",
+        env_extra={"PATH": f"{fake_bin}:{os.environ['PATH']}"},
     )
     assert proc.returncode == 0
     expected = f"growisofs -dvd-compat -speed=4 -Z /dev/sr0={iso}"
@@ -86,23 +75,15 @@ def test_s10_dry_run(tmp_path: Path) -> None:
 
 
 def test_s4_missing_iso(tmp_path: Path) -> None:
-    script = Path(__file__).resolve().parents[1] / "burn_iso.py"
     missing = tmp_path / "nope.iso"
     log = tmp_path / "burn.log"
-    env = os.environ.copy()
-    env["PYTHONPATH"] = str(Path(__file__).resolve().parents[3])
-    proc = subprocess.run(
-        [
-            sys.executable,
-            str(script),
-            "--iso-path",
-            str(missing),
-            "--logfile",
-            str(log),
-        ],
-        capture_output=True,
-        text=True,
-        env=env,
+    proc = run_script(
+        "burn_iso",
+        tmp_path,
+        "--iso-path",
+        str(missing),
+        "--logfile",
+        str(log),
     )
     assert proc.returncode != 0
     assert "File not found" in proc.stderr
@@ -112,28 +93,24 @@ def test_s4_missing_iso(tmp_path: Path) -> None:
 
 
 def test_s8_logfile_permission_denied(tmp_path: Path) -> None:
-    script = Path(__file__).resolve().parents[1] / "burn_iso.py"
     iso = tmp_path / "dummy.iso"
     iso.write_bytes(b"iso")
     restricted = tmp_path / "no_write"
     restricted.mkdir()
     os.chmod(restricted, 0o500)
     log = restricted / "burn.log"
-    env = os.environ.copy()
-    env["PYTHONPATH"] = str(Path(__file__).resolve().parents[3])
-    proc = subprocess.run(
-        [
-            sys.executable,
-            str(script),
-            "--iso-path",
-            str(iso),
-            "--logfile",
-            str(log),
-            "--dry-run",
-        ],
-        capture_output=True,
-        text=True,
-        env=env,
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    (fake_bin / "python3").symlink_to("/usr/bin/python3")
+    proc = run_script(
+        "burn_iso",
+        tmp_path,
+        "--iso-path",
+        str(iso),
+        "--logfile",
+        str(log),
+        "--dry-run",
+        env_extra={"PATH": f"{fake_bin}:{os.environ['PATH']}"},
     )
     assert proc.returncode != 0
     assert "Permission" in proc.stderr or "FileNotFoundError" in proc.stderr
