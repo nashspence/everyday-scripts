@@ -3,13 +3,13 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
-import sys
 from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
-from shared import compose
+from shared.acceptance import run_script
+
+from shared import compose  # noqa: E402
 
 
 def make_dummy_ffmpeg(dir: Path) -> None:
@@ -49,22 +49,6 @@ print(pathlib.Path(sys.argv[-1]).read_text().strip())
     else:
         exe.write_text(f"#!/bin/sh\necho {dur}\n")
     exe.chmod(0o755)
-
-
-def run_script(
-    tmp_path: Path, *args: str, env_extra: dict[str, str] | None = None
-) -> subprocess.CompletedProcess[str]:
-    script = Path(__file__).resolve().parents[1] / "make_shuffle_clips.py"
-    env = os.environ.copy()
-    env["PYTHONPATH"] = str(Path(__file__).resolve().parents[3])
-    if env_extra:
-        env.update(env_extra)
-    return subprocess.run(
-        [sys.executable, str(script), *args],
-        capture_output=True,
-        text=True,
-        env=env,
-    )
 
 
 @pytest.mark.skipif(os.environ.get("IMAGE") is None, reason="IMAGE not available")  # type: ignore[misc]
@@ -211,6 +195,7 @@ def test_s1_happy_path(tmp_path: Path) -> None:
     out_dir = tmp_path / "tmp"
     out_dir.mkdir()
     proc = run_script(
+        "make_shuffle_clips",
         tmp_path,
         "--logfile",
         str(log),
@@ -256,6 +241,7 @@ def test_s3_even_coverage(tmp_path: Path) -> None:
     out_dir = tmp_path / "tmp"
     out_dir.mkdir()
     proc = run_script(
+        "make_shuffle_clips",
         tmp_path,
         "--logfile",
         str(log),
@@ -324,6 +310,7 @@ def test_s4_keyframe_integrity(tmp_path: Path) -> None:
     out_dir = tmp_path / "tmp"
     out_dir.mkdir()
     proc = run_script(
+        "make_shuffle_clips",
         tmp_path,
         "--logfile",
         str(log),
@@ -376,6 +363,7 @@ def test_s5_invalid_numeric(tmp_path: Path) -> None:
     dummy = tmp_path / "dummy.mp4"
     dummy.write_text("x")
     proc = run_script(
+        "make_shuffle_clips",
         tmp_path,
         "--logfile",
         str(log),
@@ -400,6 +388,7 @@ def test_s6_short_footage(tmp_path: Path) -> None:
     dummy = tmp_path / "dummy.mp4"
     dummy.write_text("x")
     proc = run_script(
+        "make_shuffle_clips",
         tmp_path,
         "--logfile",
         str(log),
@@ -423,6 +412,7 @@ def test_s7_unwritable_tmp(tmp_path: Path) -> None:
     dummy = tmp_path / "dummy.mp4"
     dummy.write_text("x")
     proc = run_script(
+        "make_shuffle_clips",
         tmp_path,
         "--logfile",
         str(log),

@@ -1,3 +1,17 @@
-from .acceptance import compose, dump_logs, wait_for
+from .acceptance import (
+    compose,
+    dump_logs,
+    wait_for,
+    add_repo_to_path,
+    run_script,
+    script_path,
+)
 
-__all__ = ["compose", "dump_logs", "wait_for"]
+__all__ = [
+    "compose",
+    "dump_logs",
+    "wait_for",
+    "add_repo_to_path",
+    "run_script",
+    "script_path",
+]

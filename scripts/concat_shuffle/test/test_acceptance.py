@@ -6,49 +6,9 @@ from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
-from shared import compose
+from shared.acceptance import run_script
 
-
-def run_script(
-    tmp_path: Path, *args: str, env_extra: dict[str, str] | None = None
-) -> subprocess.CompletedProcess[str]:
-    """Invoke the script either directly or inside the release container."""
-    root = Path(__file__).resolve().parents[3]
-    script = root / "scripts" / "concat_shuffle" / "concat_shuffle.py"
-    env = os.environ.copy()
-    if env_extra:
-        env.update(env_extra)
-
-    image = os.environ.get("IMAGE")
-    if image:
-        cmd = [
-            "docker",
-            "run",
-            "--rm",
-            "-v",
-            f"{root}:/workspace:ro",
-            "-v",
-            f"{tmp_path}:{tmp_path}",
-            "-w",
-            "/workspace",
-            "-e",
-            "PYTHONPATH=/workspace",
-            "--entrypoint",
-            "python3",
-            image,
-            str(script.relative_to(root)),
-            *args,
-        ]
-        return subprocess.run(cmd, capture_output=True, text=True, env=env)
-
-    env["PYTHONPATH"] = str(root)
-    return subprocess.run(
-        [sys.executable, str(script), *args],
-        capture_output=True,
-        text=True,
-        env=env,
-    )
+from shared import compose  # noqa: E402
 
 
 def make_clip(path: Path) -> None:
@@ -160,6 +120,7 @@ def test_s1_happy_path(tmp_path: Path) -> None:
     log = tmp_path / "log.txt"
     out_vid = tmp_path / "out.mkv"
     proc = run_script(
+        "concat_shuffle",
         tmp_path,
         "--clip-list",
         str(list_file),
@@ -182,6 +143,7 @@ def test_s2_missing_clip(tmp_path: Path) -> None:
     log = tmp_path / "log.txt"
     out_vid = tmp_path / "out.mkv"
     proc = run_script(
+        "concat_shuffle",
         tmp_path,
         "--clip-list",
         str(list_file),
@@ -200,6 +162,7 @@ def test_s3_unreadable_list(tmp_path: Path) -> None:
     log = tmp_path / "log.txt"
     out_vid = tmp_path / "out.mkv"
     proc = run_script(
+        "concat_shuffle",
         tmp_path,
         "--clip-list",
         str(bad_list),
@@ -221,6 +184,7 @@ def test_s4_output_locked(tmp_path: Path) -> None:
     log = tmp_path / "log.txt"
     out_vid = Path("/proc/out.mkv")
     proc = run_script(
+        "concat_shuffle",
         tmp_path,
         "--clip-list",
         str(list_file),
@@ -282,6 +246,7 @@ def test_s6_large_montage(tmp_path: Path) -> None:
     log = tmp_path / "log.txt"
     out_vid = tmp_path / "out.mkv"
     proc = run_script(
+        "concat_shuffle",
         tmp_path,
         "--clip-list",
         str(list_file),

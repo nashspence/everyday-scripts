@@ -62,3 +62,67 @@ def wait_for(
         if time.time() > deadline:
             raise AssertionError(f"Timed out waiting for {message}")
         time.sleep(interval)
+
+
+# Repository root directory
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+def add_repo_to_path() -> None:
+    """Insert the repository root at the start of ``sys.path``."""
+    if str(REPO_ROOT) not in sys.path:
+        sys.path.insert(0, str(REPO_ROOT))
+
+
+def script_path(name: str) -> Path:
+    """Return the path to ``scripts/<name>/<name>.py`` inside the repo."""
+    return REPO_ROOT / "scripts" / name / f"{name}.py"
+
+
+def run_script(
+    script: str | Path,
+    tmp_path: Path,
+    *args: str,
+    env_extra: dict[str, str] | None = None,
+    check: bool = False,
+) -> subprocess.CompletedProcess[str]:
+    """Execute ``script`` with ``args`` either locally or via the release container."""
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(REPO_ROOT)
+    if env_extra:
+        env.update(env_extra)
+
+    if isinstance(script, str):
+        script_file = script_path(script)
+    else:
+        script_file = script
+
+    image = os.environ.get("IMAGE")
+    if image:
+        cmd = [
+            "docker",
+            "run",
+            "--rm",
+            "-v",
+            f"{REPO_ROOT}:/workspace:ro",
+            "-v",
+            f"{tmp_path}:{tmp_path}",
+            "-w",
+            "/workspace",
+            "-e",
+            "PYTHONPATH=/workspace",
+            "--entrypoint",
+            "python3",
+            image,
+            str(script_file.relative_to(REPO_ROOT)),
+            *args,
+        ]
+        return subprocess.run(cmd, capture_output=True, text=True, check=check, env=env)
+
+    return subprocess.run(
+        [sys.executable, str(script_file), *args],
+        capture_output=True,
+        text=True,
+        check=check,
+        env=env,
+    )
