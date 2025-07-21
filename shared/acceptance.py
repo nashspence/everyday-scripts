@@ -99,10 +99,20 @@ def run_script(
 
     image = os.environ.get("IMAGE")
     if image:
+        # ensure Docker user can access tmp_path contents
+        tmp_path.chmod(0o777)
+        for p in tmp_path.rglob("*"):
+            try:
+                p.chmod(0o777 if p.is_dir() else 0o666)
+            except PermissionError:
+                pass
+
         cmd = [
             "docker",
             "run",
             "--rm",
+            "-u",
+            "1000:1000",
             "-v",
             f"{REPO_ROOT}:/workspace:ro",
             "-v",
