@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -86,7 +87,7 @@ def run_script(
     env_extra: dict[str, str] | None = None,
     check: bool = False,
 ) -> subprocess.CompletedProcess[str]:
-    """Execute ``script`` with ``args`` either locally or via the release container."""
+    """Execute ``script`` with ``args`` either locally or in ``IMAGE`` if available."""
     env = os.environ.copy()
     env["PYTHONPATH"] = str(REPO_ROOT)
     if env_extra:
@@ -98,7 +99,7 @@ def run_script(
         script_file = script
 
     image = os.environ.get("IMAGE")
-    if image:
+    if image and shutil.which("docker"):
         cmd = [
             "docker",
             "run",
