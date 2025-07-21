@@ -109,14 +109,23 @@ def run_script(
             f"{tmp_path}:{tmp_path}",
             "-w",
             "/workspace",
-            "-e",
-            "PYTHONPATH=/workspace",
+        ]
+
+        docker_env = {"PYTHONPATH": "/workspace"}
+        if env_extra:
+            docker_env.update(env_extra)
+
+        for key, val in docker_env.items():
+            cmd += ["-e", f"{key}={val}"]
+
+        cmd += [
             "--entrypoint",
             "python3",
             image,
             str(script_file.relative_to(REPO_ROOT)),
             *args,
         ]
+
         return subprocess.run(cmd, capture_output=True, text=True, check=check, env=env)
 
     return subprocess.run(
