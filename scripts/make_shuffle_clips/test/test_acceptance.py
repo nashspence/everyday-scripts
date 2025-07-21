@@ -15,7 +15,7 @@ from shared import compose  # noqa: E402
 def make_dummy_ffmpeg(dir: Path) -> None:
     exe = dir / "ffmpeg"
     exe.write_text(
-        """#!/usr/bin/python3
+        """#!/usr/local/bin/python3
 import sys, pathlib, re
 args = sys.argv[1:]
 out = args[-1]
@@ -41,7 +41,7 @@ def make_dummy_ffprobe(dir: Path, dur: float | None = None) -> None:
     exe = dir / "ffprobe"
     if dur is None:
         exe.write_text(
-            """#!/usr/bin/python3
+            """#!/usr/local/bin/python3
 import sys, pathlib
 print(pathlib.Path(sys.argv[-1]).read_text().strip())
 """

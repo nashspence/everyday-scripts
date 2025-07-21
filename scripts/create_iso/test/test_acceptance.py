@@ -210,6 +210,7 @@ def test_s8_iso_exists_no_force(tmp_path: Path) -> None:
     (build / "f.txt").write_text("x")
     iso = tmp_path / "out.iso"
     iso.write_text("existing")
+    iso.chmod(0o666)
     log = tmp_path / "log.txt"
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
